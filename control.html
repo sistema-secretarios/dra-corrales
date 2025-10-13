@@ -1132,6 +1132,40 @@
             
             tablaHistorial.appendChild(row);
             
+            // --- NUEVO: Controlar el estado de la firma digital según el control ---
+            const selectControl = row.querySelector('.control');
+            const firmaDigitalTd = row.cells[2]; // La tercera celda es la de firma digital
+
+            const actualizarEstadoFirma = () => {
+                const valor = selectControl.value;
+                if (valor === 'Pendiente') {
+                    selectControl.style.color = 'red';
+                    selectControl.style.fontWeight = 'bold';
+                    // Deshabilitar todos los inputs en la celda de firma digital
+                    firmaDigitalTd.querySelectorAll('input, select, textarea').forEach(input => {
+                        input.disabled = true;
+                    });
+                } else if (valor === 'Cumplido') {
+                    selectControl.style.color = 'green';
+                    selectControl.style.fontWeight = 'bold';
+                    // Habilitar todos los inputs en la celda de firma digital
+                    firmaDigitalTd.querySelectorAll('input, select, textarea').forEach(input => {
+                        input.disabled = false;
+                    });
+                } else {
+                    selectControl.style.color = '';
+                    selectControl.style.fontWeight = '';
+                    // Deshabilitar si no hay selección
+                    firmaDigitalTd.querySelectorAll('input, select, textarea').forEach(input => {
+                        input.disabled = true;
+                    });
+                }
+            };
+
+            selectControl.addEventListener('change', actualizarEstadoFirma);
+            // Ejecutar para establecer el estado inicial
+            actualizarEstadoFirma();
+            
             // Agregar eventos para la lógica condicional
             const radiosSecretario = row.querySelectorAll('input[name^="firmaSecretario_"]');
             radiosSecretario.forEach(radio => {
