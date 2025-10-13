@@ -580,14 +580,30 @@
                         </div>
                         <div class="form-group">
                             <label for="prioridadTarea">Prioridad de Tarea:</label>
-                            <input type="text" id="prioridadTarea" placeholder="Ej: Alta, Media, Baja, Urgente">
+                            <select id="prioridadTarea">
+                                <option value="">Seleccionar prioridad</option>
+                                <option value="Ninguna" style="color: #757575; font-weight: bold;">Ninguna</option>
+                                <option value="Baja" style="color: #388E3C; font-weight: bold;">Baja</option>
+                                <option value="Media" style="color: #F57C00; font-weight: bold;">Media</option>
+                                <option value="Alta" style="color: #D32F2F; font-weight: bold;">Alta</option>
+                                <option value="Urgente" style="color: #7B1FA2; font-weight: bold;">Urgente</option>
+                            </select>
                         </div>
                     </div>
                     
                     <div class="form-row">
                         <div class="form-group">
                             <label for="estadoProcesal">Estado Procesal:</label>
-                            <input type="text" id="estadoProcesal" placeholder="Ej: Iniciado, En Trámite, Sentencia...">
+                            <select id="estadoProcesal">
+                                <option value="">Seleccionar estado</option>
+                                <option value="Iniciado">Iniciado</option>
+                                <option value="En tramite">En trámite</option>
+                                <option value="Con resolucion">Con resolución</option>
+                                <option value="Con sentencia">Con sentencia</option>
+                                <option value="En Alzada">En Alzada</option>
+                                <option value="Finalizado">Finalizado</option>
+                                <option value="Archivado">Archivado</option>
+                            </select>
                         </div>
                         <div class="form-group">
                             <label for="fechaEstado">Fecha del Estado:</label>
