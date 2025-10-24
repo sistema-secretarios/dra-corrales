@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema Secretarios 6</title>
+    <title>Login - Sistema Defensoría Civil y Comercial 6</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
             --primary: #6a1b9a;       /* Púrpura oscuro principal */
             --primary-dark: #4a148c;  /* Púrpura más oscuro */
             --secondary: #7b1fa2;      /* Púrpura secundario */
-            --accent: #8e24aa;        /* Púrpura acento */
+            --accent: #8e24aa;/* Púrpura acento */
             --light: #f8f9fa;
             --dark: #343a40;
             --success: #28a745;
@@ -30,7 +30,7 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #f4f4f4;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             color: var(--dark);
             display: flex;
@@ -69,9 +69,11 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(0, 0, 0, 0.2);
+            background: rgba(0, 0, 0, 0.3);
         }
 
+        /* INICIO: SE ELIMINAN ESTILOS DE LA IMAGEN DE BALANZA */
+        /*
         .responsive-image {
             width: 100%;
             max-width: 400px;
@@ -87,6 +89,26 @@
         .responsive-image:hover {
             transform: perspective(1000px) rotateY(0deg) scale(1.02);
         }
+        */
+        /* FIN: SE ELIMINAN ESTILOS DE LA IMAGEN DE BALANZA */
+
+        /* INICIO: NUEVOS ESTILOS AGREGADOS PARA EL TEXTO EN EL PANEL IZQUIERDO */
+        .panel-text-content {
+            color: white; 
+            text-align: center;
+            z-index: 2; 
+            padding: 20px;
+        }
+
+        .panel-text-content h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            line-height: 1.2;
+            text-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+            animation: fadeIn 1s ease forwards;
+        }
+        /* FIN: NUEVOS ESTILOS AGREGADOS PARA EL TEXTO EN EL PANEL IZQUIERDO */
+
 
         /* Panel central - Icono animado */
         .center-panel {
@@ -294,7 +316,7 @@
         .input-with-icon input:focus {
             outline: none;
             border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(106, 27, 154, 0.2);
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
         }
 
         .btn {
@@ -318,7 +340,7 @@
 
         .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(106, 27, 154, 0.4);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
         }
 
         .btn-secondary {
@@ -328,7 +350,7 @@
         }
 
         .btn-secondary:hover {
-            background: rgba(106, 27, 154, 0.1);
+            background: rgba(102, 126, 234, 0.1);
         }
 
         .divider {
@@ -492,6 +514,10 @@
             .brand-subtitle {
                 font-size: 1rem;
             }
+            
+            .panel-text-content h1 { /* Ajuste responsive para el nuevo texto */
+                font-size: 2rem;
+            }
         }
 
         @media (max-width: 480px) {
@@ -518,23 +544,14 @@
 <body>
     <div class="login-container fade-in">
         <div class="image-panel">
-            <img src="https://raw.githubusercontent.com/AdminDefensoria6/listadecausas/0bed6ff7d4a612c68f1a3193b694f02bf900387e/balanza2.png" 
-                 alt="Balanza de la Justicia" 
-                 class="responsive-image">
+            <div class="panel-text-content">
+                <h1>Sistema Digital de Causas</h1>
+            </div>
         </div>
 
         <div class="center-panel">
             <div class="brand-content">
-                <div class="animated-icon">
-                    <img src="https://raw.githubusercontent.com/AdminDefensoria6/listadecausas/0bed6ff7d4a612c68f1a3193b694f02bf900387e/icons8-bloquear.gif" 
-                         alt="Sistema Defensoría">
-                    <div class="icon-glow"></div>
-                    <div class="sparkle"></div>
-                    <div class="sparkle"></div>
-                    <div class="sparkle"></div>
-                    <div class="sparkle"></div>
-                </div>
-                <h1 class="brand-title">Secretarios</h1>
+                <h1 class="brand-title">Dra Corrales</h1>
                 <p class="brand-subtitle">Defensoría Civil y Comercial 6</p>
             </div>
         </div>
@@ -542,7 +559,7 @@
         <div class="right-panel">
             <div class="form-container">
                 <div class="form-header">
-                    <h2>Acceso al Sistema Dra Corrales</h2>
+                    <h2>Acceso al Sistema</h2>
                     <p>Ingresa tus credenciales para continuar</p>
                 </div>
                 
@@ -620,7 +637,7 @@
                 
                 <div class="card-footer">
                     <div class="credit-message">Diseño y programación de:</div>
-                    <div class="developer">Rómulo Fioravante</div>
+                    <div class="developer">Rómulo Fioravante - Leg2481 - Año 2025</div>
                 </div>
             </div>
         </div>
@@ -628,7 +645,7 @@
 
     <script type="module">
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
-        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, updateProfile, signOut } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, updateProfile } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
 
         const firebaseConfig = {
             apiKey: "AIzaSyDhRdnI7u6fBBH9A5h31Y9WnDNopkZOlgE",
@@ -644,11 +661,13 @@
 
         // Variables globales
         window.auth = auth;
+        window.currentUser = null;
 
         // Verificar estado de autenticación
         onAuthStateChanged(auth, (user) => {
             if (user) {
-                // Usuario autenticado, redirigir a la aplicación
+                window.currentUser = user;
+                // Redirigir a la aplicación principal
                 window.location.href = 'app.html';
             }
         });
@@ -658,6 +677,7 @@
             const name = document.getElementById('registerName').value;
             const email = document.getElementById('registerEmail').value;
             const password = document.getElementById('registerPassword').value;
+            const messageDiv = document.getElementById('authMessage');
 
             if (!name || !email || !password) {
                 showMessage('Por favor, complete todos los campos.', 'error');
@@ -673,11 +693,6 @@
                 const userCredential = await createUserWithEmailAndPassword(auth, email, password);
                 await updateProfile(userCredential.user, { displayName: name });
                 showMessage('¡Cuenta creada exitosamente! Redirigiendo...', 'success');
-                
-                // Redirigir automáticamente después de registro exitoso
-                setTimeout(() => {
-                    window.location.href = 'app.html';
-                }, 1500);
             } catch (error) {
                 showMessage(getErrorMessage(error.code), 'error');
             }
@@ -686,6 +701,7 @@
         window.loginUser = async function() {
             const email = document.getElementById('loginEmail').value;
             const password = document.getElementById('loginPassword').value;
+            const messageDiv = document.getElementById('authMessage');
 
             if (!email || !password) {
                 showMessage('Por favor, complete todos los campos.', 'error');
@@ -695,11 +711,6 @@
             try {
                 await signInWithEmailAndPassword(auth, email, password);
                 showMessage('Iniciando sesión...', 'success');
-                
-                // Redirigir automáticamente después de login exitoso
-                setTimeout(() => {
-                    window.location.href = 'app.html';
-                }, 1000);
             } catch (error) {
                 showMessage(getErrorMessage(error.code), 'error');
             }
