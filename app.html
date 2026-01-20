@@ -6,30 +6,20 @@
     <title>Sistema Secretarios</title>
     <style>
         /* =========================================
-           ESTILOS GLASSMORPHISM PÚRPURA
+           ESTILOS GLASSMORPHISM (GRIS + BORDES ROJOS)
            ========================================= */
         :root {
-          /* Fondo con un toque lavanda para resaltar el cristal */
-          --background-gradient: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%);
-          
-          /* Paleta Púrpura */
-          --foreground: #4a148c; /* Texto morado oscuro */
-          --card: rgba(255, 255, 255, 0.65); /* Cristal blanco */
-          --card-border: rgba(123, 31, 162, 0.3); /* Borde morado suave */
-          
+          --background-gradient: linear-gradient(135deg, #f3f4f6 0%, #d1d5db 100%);
+          --foreground: #7f1d1d; 
+          --card: rgba(255, 255, 255, 0.7);
+          --card-border: rgba(220, 38, 38, 0.6);
+          --shadow-glass: 0 8px 32px 0 rgba(153, 27, 27, 0.15);
           --popover: rgba(255, 255, 255, 0.95);
-          
-          --primary: #7b1fa2; /* Morado vibrante principal */
+          --primary: #dc2626; 
           --primary-foreground: #ffffff;
-          
-          --secondary: #9c27b0;
-          --accent: rgba(123, 31, 162, 0.1); /* Fondo suave al pasar el mouse */
-          
-          --destructive: #d32f2f; /* Rojo para cerrar sesión (estándar) */
-          --destructive-foreground: #ffffff;
-          
-          --radius: 1.5rem; /* Bordes más redondeados */
-          --shadow-glass: 0 8px 32px 0 rgba(74, 20, 140, 0.15);
+          --accent: rgba(220, 38, 38, 0.1);
+          --destructive: #d32f2f;
+          --radius: 1.5rem;
         }
 
         * {
@@ -44,89 +34,84 @@
             min-height: 100vh;
             color: var(--foreground);
             background-attachment: fixed;
-            overflow-x: hidden; /* Prevenir scroll horizontal */
+            overflow-x: hidden;
         }
 
-        /* Navbar estilo Glass Púrpura */
+        /* Navbar: AJUSTADA COMO CÓDIGO A PARA ESTAR SIEMPRE VISIBLE */
         .navbar {
-            background: rgba(255, 255, 255, 0.7);
-            backdrop-filter: blur(15px);
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
             padding: 12px 25px;
-            box-shadow: 0 4px 20px rgba(106, 27, 154, 0.1); /* Sombra morada suave */
-            position: sticky;
+            box-shadow: 0 4px 20px rgba(153, 27, 27, 0.08);
+            /* Cambiado a fixed para paridad con A */
+            position: fixed;
             top: 0;
-            z-index: 1000;
+            left: 0;
+            width: 100%;
+            height: 70px;
+            z-index: 5000;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid var(--card-border);
+            border-bottom: 2px solid var(--card-border);
         }
 
-        .navbar-left { display: flex; align-items: center; gap: 20px; }
-        .navbar-right { display: flex; align-items: center; gap: 15px; }
-        .navbar-brand { font-size: 22px; font-weight: 800; color: var(--primary); white-space: nowrap; letter-spacing: 0.5px; }
+        /* Ajuste para que el contenido no quede debajo de la navbar fija */
+        main {
+            padding-top: 75px; 
+            width: 100%;
+        }
+
+        .navbar-left { display: flex; align-items: center; gap: 20px; min-width: 0; }
+        .navbar-brand { font-size: 22px; font-weight: 800; color: var(--primary); letter-spacing: 0.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
         .menu-container { position: relative; }
         .menu-toggle {
             background: var(--primary);
-            color: var(--primary-foreground);
+            color: white;
             border: none;
             padding: 10px 20px;
             border-radius: 12px;
             cursor: pointer;
             font-weight: 600;
-            font-size: 15px;
             display: flex;
             align-items: center;
             gap: 8px;
             min-width: 100px;
             justify-content: center;
-            box-shadow: 0 4px 10px rgba(123, 31, 162, 0.3);
-            transition: transform 0.2s, box-shadow 0.2s;
         }
-
-        .menu-toggle:hover { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(123, 31, 162, 0.4); }
 
         .dropdown-menu {
             position: absolute;
-            top: 120%;
+            top: 100%;
             left: 0;
-            width: 260px;
+            width: 250px;
             background: var(--popover);
             border-radius: 1rem;
             box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
-            z-index: 1100;
-            border: 1px solid var(--card-border);
-            overflow: hidden;
+            z-index: 5100;
+            margin-top: 8px;
+            border: 2px solid var(--card-border);
             display: none;
-            animation: slideDown 0.2s ease;
+            animation: fadeInModal 0.2s ease;
         }
-        
-        @keyframes slideDown {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
         .dropdown-menu.active { display: block; }
-        .menu-section { padding: 8px 0; border-bottom: 1px solid rgba(0,0,0,0.05); }
-        .menu-items { max-height: 500px; overflow-y: auto; }
-        
+
         .menu-item {
             padding: 12px 20px;
             display: block;
             text-decoration: none;
-            cursor: pointer;
-            transition: all 0.2s;
-            font-size: 14px;
+            color: var(--foreground);
             font-weight: 600;
-            color: var(--foreground); 
+            cursor: pointer;
+            transition: 0.2s;
         }
         .menu-item:hover { background: var(--accent); color: var(--primary); padding-left: 25px; }
 
-        .user-info { display: flex; align-items: center; gap: 12px; }
-        .profile-pic { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary); box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-        
-        .logout-btn { 
+        .user-info { display: flex; align-items: center; gap: 15px; }
+        .user-photo { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary); }
+        .logout-nav-btn { 
             background: white; 
             color: var(--destructive); 
             border: 2px solid var(--destructive); 
@@ -136,11 +121,9 @@
             font-weight: 700; 
             transition: all 0.2s;
         }
-        .logout-btn:hover { background: var(--destructive); color: white; }
-        
-        .welcome-text { font-size: 0.95em; font-weight: 700; color: var(--foreground); }
+        .logout-nav-btn:hover { background: var(--destructive); color: white; }
 
-        /* Estructura Principal */
+        /* Layout Principal */
         .welcome-screen {
             padding: 20px 40px;
             height: calc(100vh - 80px);
@@ -153,312 +136,240 @@
         .split-layout {
             display: flex;
             width: 100%;
-            max-width: 1400px;
+            max-width: 1200px;
             height: 100%;
             max-height: 800px;
-            gap: 40px;
+            gap: 30px;
             align-items: stretch;
         }
 
-        /* Panel Izquierdo (Logo) */
         .left-panel {
             flex: 1;
+            background: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(10px);
+            border: 2px solid var(--primary);
+            border-radius: var(--radius);
             display: flex;
-            flex-direction: column;
             justify-content: center;
             align-items: center;
-            background: rgba(255, 255, 255, 0.4);
-            border: 2px solid var(--primary); /* Borde morado */
-            border-radius: var(--radius);
-            padding: 40px;
-            text-align: center;
+            padding: 30px;
             box-shadow: var(--shadow-glass);
-            backdrop-filter: blur(8px);
         }
 
-        .mp-logo { width: 100%; height: auto; object-fit: contain; display: block; filter: drop-shadow(0 10px 10px rgba(0,0,0,0.1)); }
+        .mp-logo {
+            width: 90%;
+            max-width: 100%;
+            height: auto;
+            object-fit: contain;
+            filter: drop-shadow(0 8px 15px rgba(0,0,0,0.1));
+        }
 
-        /* MODIFICACIÓN: Panel Derecho Ajustado
-           Se asegura el centrado y se elimina el scroll vertical
-        */
         .right-panel {
             flex: 2;
-            padding: 30px; /* Padding ajustado ligeramente */
-            background: rgba(255, 255, 255, 0.5);
+            background: rgba(255, 255, 255, 0.3);
             backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.8);
             border-radius: var(--radius);
-            box-shadow: var(--shadow-glass);
-            
+            padding: 30px;
             display: flex;
             justify-content: center;
-            align-items: center; /* Centrado vertical */
-            position: relative;
-            overflow: hidden;    /* Sin scroll */
+            align-items: center;
+            box-shadow: var(--shadow-glass);
+            border: 2px solid var(--primary);
+            overflow: hidden;
         }
 
-        /* Decoración de fondo en el panel derecho */
-        .right-panel::before {
-            content: '';
-            position: absolute;
-            top: -20px; right: -20px;
-            width: 100px; height: 100px;
-            background: var(--primary);
-            border-radius: 50%;
-            opacity: 0.1;
-            z-index: -1;
-        }
-
-        /* ========================================================
-           NUEVOS ESTILOS: Módulos Rectangulares (Grid Ajustado) 
-           ========================================================
-        */
         .module-grid {
             display: grid;
-            /* Columnas flexibles que llenan el ancho */
             grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
-            /* Filas flexibles que llenan el alto (grid-auto-rows: 1fr) */
             grid-auto-rows: 1fr;
             gap: 20px;
             width: 100%;
-            height: 100%; /* Ocupa todo el alto del panel */
+            height: 100%;
         }
 
         .rect-module {
             background: rgba(255, 255, 255, 0.7);
             backdrop-filter: blur(10px);
             border-radius: 12px;
-            padding: 15px; /* Padding reducido para evitar desbordes */
-            /* Eliminado min-height fijo, ahora es 100% de la celda */
-            height: 100%; 
+            padding: 15px;
+            height: 100%;
             display: flex;
-            flex-direction: column;
             justify-content: center;
             align-items: center;
             text-align: center;
             cursor: pointer;
             transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-            box-shadow: 0 4px 6px rgba(74, 20, 140, 0.05);
-            border: 1px solid rgba(255,255,255,0.6);
-            /* Borde izquierdo grueso para el color */
+            border: 1px solid var(--card-border);
             border-left-width: 6px;
             border-left-style: solid;
-            
-            /* Tipografía */
             color: var(--foreground);
             font-weight: 700;
             font-size: 15px;
-            line-height: 1.3;
         }
 
-        .rect-module:hover {
-            transform: translateY(-4px);
-            background: rgba(255, 255, 255, 0.95);
-            /* Sombra morada al hover */
-            box-shadow: 0 15px 30px rgba(123, 31, 162, 0.2);
-        }
+        .rect-module:hover { transform: translateY(-5px); background: #fff; }
 
-        /* Colores de bordes laterales */
-        .rect-module:nth-child(1) { border-left-color: rgba(211, 47, 47, 0.8); } /* Rojo */
-        .rect-module:nth-child(2) { border-left-color: rgba(25, 118, 210, 0.8); } /* Azul */
-        .rect-module:nth-child(3) { border-left-color: rgba(56, 142, 60, 0.8); } /* Verde */
-        .rect-module:nth-child(4) { border-left-color: rgba(255, 143, 0, 0.8); } /* Naranja */
-        .rect-module:nth-child(5) { border-left-color: rgba(123, 31, 162, 0.8); } /* Morado */
-        .rect-module:nth-child(6) { border-left-color: rgba(0, 151, 167, 0.8); } /* Cyan */
+        /* Colores de bordes */
+        .rect-module:nth-child(1) { border-left-color: #dc2626; }
+        .rect-module:nth-child(2) { border-left-color: #7c3aed; }
+        .rect-module:nth-child(3) { border-left-color: #16a34a; }
+        .rect-module:nth-child(4) { border-left-color: #ea580c; }
+        .rect-module:nth-child(5) { border-left-color: #2563eb; }
+        .rect-module:nth-child(6) { border-left-color: #0891b2; }
 
+        /* =========================================
+           ADAPTACIÓN MÓVIL (LÓGICA EXACTA DE CÓDIGO A)
+           ========================================= */
+        @media (max-width: 850px) {
+            .navbar { padding: 10px; }
+            .navbar-brand { font-size: 14px; white-space: normal; line-height: 1.1; max-width: 150px; }
+            .navbar-left { gap: 10px; }
+            .menu-toggle { padding: 8px 10px; font-size: 13px; min-width: 80px; }
+            
+            .user-info { gap: 8px; }
+            /* Ocultamos nombre para dejar espacio, igual que en A */
+            #userName { display: none; } 
+            .logout-nav-btn { padding: 8px 10px; font-size: 13px; }
 
-        /* Iframe */
-        .iframe-container { display: none; width: 100%; height: 100%; padding-top: 10px; }
-        
-        .iframe-header { 
-            background: var(--card); 
-            backdrop-filter: blur(10px);
-            padding: 15px 25px; 
-            border-radius: 1rem 1rem 0 0;
-            border: 1px solid var(--card-border);
-            border-bottom: none;
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            margin: 0 20px;
-        }
-        
-        .iframe-title { font-weight: 800; font-size: 20px; color: var(--primary); }
-        
-        .content-iframe { 
-            width: calc(100% - 40px); 
-            height: calc(100vh - 160px); 
-            border: 1px solid var(--card-border);
-            border-top: none;
-            border-radius: 0 0 1rem 1rem;
-            margin: 0 20px;
-            background: white;
-            box-shadow: var(--shadow-glass);
-        }
-
-        @media (max-width: 900px) {
-            .split-layout { flex-direction: column; padding: 10px; height: auto; }
+            .split-layout { flex-direction: column; height: auto; }
+            /* Ocultar panel izquierdo igual que en A */
             .left-panel { display: none; }
-            .right-panel { padding: 20px; height: auto; min-height: 400px; }
-            /* En móvil permitimos scroll si es necesario y altura auto */
+            .right-panel { padding: 20px; height: auto; min-height: 400px; align-items: center; }
+            
             .welcome-screen { height: auto; padding: 20px; overflow-y: auto; }
-            .module-grid { height: auto; }
+            .module-grid { height: auto; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); }
         }
 
-        /* Modal Cerrar Sesión (Estilo Glass) */
+        /* Modales e Iframes */
         .modal-overlay {
             position: fixed;
             top: 0; left: 0;
             width: 100%; height: 100%;
-            background: rgba(74, 20, 140, 0.2); /* Fondo morado muy transparente */
+            background: rgba(127, 29, 29, 0.2); 
             backdrop-filter: blur(8px);
             display: none;
             justify-content: center;
             align-items: center;
-            z-index: 2000;
-            animation: fadeIn 0.3s ease;
+            z-index: 6000;
+            animation: fadeInModal 0.3s ease;
         }
 
         .modal-content {
-            background: rgba(255, 255, 255, 0.9);
+            background: rgba(255, 255, 255, 0.95);
             padding: 30px;
             border-radius: 20px;
             width: 90%;
             max-width: 350px;
             text-align: center;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.1);
-            border: 1px solid rgba(255, 255, 255, 1);
+            border: 2px solid var(--card-border);
         }
 
-        .modal-title { color: var(--destructive); font-size: 1.4rem; font-weight: 800; margin-bottom: 10px; }
-        .modal-text { color: #555; font-size: 1rem; margin-bottom: 25px; font-weight: 500; }
-        
-        .modal-buttons { display: flex; gap: 15px; justify-content: center; }
-        
-        .btn-confirm { 
-            background: var(--destructive); 
-            color: white; 
-            border: none; 
-            padding: 12px 25px; 
-            border-radius: 12px; 
-            cursor: pointer; 
-            font-weight: 700; 
-            box-shadow: 0 4px 10px rgba(211, 47, 47, 0.3);
-            transition: transform 0.2s; 
-        }
-        
-        .btn-cancel { 
-            background: #f3e5f5; /* Fondo lila muy claro */
-            color: var(--primary);
-            border: 1px solid transparent;
-            padding: 12px 25px; 
-            border-radius: 12px; 
-            cursor: pointer; 
-            font-weight: 700; 
-            transition: background 0.2s;
+        .iframe-container { 
+            display: none; 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100vw; 
+            height: 100vh; 
+            z-index: 4000; 
+            background: white;
+            flex-direction: column;
+            padding-top: 70px;
         }
 
-        .btn-confirm:hover { transform: translateY(-2px); opacity: 0.9; }
-        .btn-cancel:hover { background: #e1bee7; }
+        .iframe-card { background: white; flex: 1; display: flex; flex-direction: column; }
+        .iframe-header {
+            background: white; padding: 10px 25px; border-bottom: 2px solid var(--primary);
+            display: flex; justify-content: space-between; align-items: center; height: 50px;
+        }
+        .content-iframe { width: 100%; flex: 1; border: none; }
 
-        @keyframes fadeIn {
+        @keyframes fadeInModal {
             from { opacity: 0; transform: scale(0.95); }
             to { opacity: 1; transform: scale(1); }
         }
     </style>
 </head>
 <body>
-    <div class="app-container">
-        <nav class="navbar">
-            <div class="navbar-left">
-                <div class="menu-container">
-                    <button class="menu-toggle" id="menuToggleBtn" onclick="toggleMenu()">
-                        <span>☰</span> Menú
-                    </button>
-                    <div class="dropdown-menu" id="dropdownMenu">
-                        <div class="menu-items">
-                            <div class="menu-section">
-                                <div class="menu-item" onclick="openSection('causas.html', 'Mis Causas')">Mis causas</div>
-                                <div class="menu-item" onclick="openSection('agenda-clientes.html', 'Agenda de Clientes')">Agenda de Clientes</div>
-                                <div class="menu-item" onclick="openSection('control.html', 'Control de Causas')">Control de causas</div>
-                            </div>
-                            <div class="menu-section">
-                                <div class="menu-item" onclick="openSection('agenda.html', 'Calendario de Tareas')">Calendario de Tareas</div>
-                                <div class="menu-item" onclick="openSection('estadisticas.html', 'Estadísticas')">Estadistica de Tareas</div>
-                            </div>
-                            <div class="menu-section">
-                                <div class="menu-item" onclick="openExternalSystem()">Sistema Digital</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="navbar-brand">Sistema Secretarios</div>
-            </div>
-            
-            <div class="navbar-right">
-                <div class="user-info">
-                    <span id="userName" class="welcome-text">Cargando...</span>
-                    <img class="profile-pic" src="https://github.com/sistemadigital/iconos/blob/main/mujer.png?raw=true" alt="Perfil">
-                    <button class="logout-btn" onclick="logout()">Salir</button>
-                </div>
-            </div>
-        </nav>
 
-        <main class="main-content">
-            <div id="welcomeScreen" class="welcome-screen">
-                <div class="split-layout">
-                    <div class="left-panel">
-                        <img src="https://github.com/sistemadigital/iconos/blob/main/MP.png?raw=true" alt="Ministerio Público" class="mp-logo">
-                    </div>
-                    
-                    <div class="right-panel">
-                        <div class="module-grid">
-                            <div class="rect-module" onclick="openSection('causas.html', 'Mis Causas')">Mis causas</div>
-                            <div class="rect-module" onclick="openSection('agenda-clientes.html', 'Agenda de Clientes')">Agenda de Clientes</div>
-                            <div class="rect-module" onclick="openSection('control.html', 'Control de Causas')">Control de causas</div>
-                            <div class="rect-module" onclick="openSection('agenda.html', 'Calendario de Tareas')">Calendario de Tareas</div>
-                            <div class="rect-module" onclick="openExternalSystem()">Sistema Digital</div>
-                            <div class="rect-module" onclick="openSection('estadisticas.html', 'Estadísticas')">Estadisticas</div>
-                        </div>
+    <nav class="navbar">
+        <div class="navbar-left">
+            <div class="menu-container">
+                <button class="menu-toggle" id="menuToggleBtn" onclick="toggleMenu()">
+                    <span>☰</span> Menú
+                </button>
+                <div class="dropdown-menu" id="dropdownMenu">
+                    <div class="menu-item" onclick="openSection('causas.html', 'Mis Causas')">Mis causas</div>
+                    <div class="menu-item" onclick="openSection('agenda-clientes.html', 'Agenda de Clientes')">Agenda de Clientes</div>
+                    <div class="menu-item" onclick="openSection('control.html', 'Control de Causas')">Control de causas</div>
+                    <div class="menu-item" onclick="openSection('agenda.html', 'Calendario de Tareas')">Calendario de Tareas</div>
+                    <div class="menu-item" onclick="openSection('estadisticas.html', 'Estadísticas')">Estadística de Tareas</div>
+                    <div class="menu-item" onclick="openExternalSystem()">Sistema Digital</div>
+                </div>
+            </div>
+            <div class="navbar-brand">Sistema Secretarios</div>
+        </div>
+        
+        <div class="user-info">
+            <span id="userName" style="font-weight: 700;">Usuario</span>
+            <img id="userPhoto" src="https://github.com/sistemadigital/iconos/blob/main/hombre.png?raw=true" alt="Perfil" class="user-photo">
+            <button class="logout-nav-btn" onclick="logout()">Salir</button>
+        </div>
+    </nav>
+
+    <main>
+        <div id="welcomeScreen" class="welcome-screen">
+            <div class="split-layout">
+                <div class="left-panel">
+                    <img src="https://github.com/sistemadigital/iconos/blob/main/MP.png?raw=true" alt="Logo" class="mp-logo">
+                </div>
+                
+                <div class="right-panel">
+                    <div class="module-grid">
+                        <div class="rect-module" onclick="openSection('causas.html', 'Mis Causas')">Mis causas</div>
+                        <div class="rect-module" onclick="openSection('agenda-clientes.html', 'Agenda de Clientes')">Agenda de Clientes</div>
+                        <div class="rect-module" onclick="openSection('control.html', 'Control de Causas')">Control de causas</div>
+                        <div class="rect-module" onclick="openSection('agenda.html', 'Calendario de Tareas')">Calendario de Tareas</div>
+                        <div class="rect-module" onclick="openExternalSystem()">Sistema Digital</div>
+                        <div class="rect-module" onclick="openSection('estadisticas.html', 'Estadísticas')">Estadísticas</div>
                     </div>
                 </div>
             </div>
+        </div>
 
-            <div id="iframeContainer" class="iframe-container">
+        <div id="iframeContainer" class="iframe-container">
+            <div class="iframe-card">
                 <div class="iframe-header">
-                    <div class="iframe-title" id="iframeTitle">Cargando...</div>
-                    <button onclick="closeIframe()" style="background:var(--destructive); color:white; border:none; padding:8px 20px; border-radius:10px; cursor:pointer; font-weight:bold; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">✕ Cerrar</button>
+                    <div class="iframe-title" id="iframeTitle" style="font-weight: 800; color: var(--primary);">Cargando...</div>
+                    <button onclick="closeIframe()" style="background:var(--primary); color:white; border:none; padding:8px 15px; border-radius:8px; cursor:pointer; font-weight:bold;">✕ Cerrar</button>
                 </div>
                 <iframe id="contentIframe" class="content-iframe" src=""></iframe>
             </div>
-        </main>
-    </div>
+        </div>
+    </main>
 
     <div id="logoutModal" class="modal-overlay">
         <div class="modal-content">
-            <div class="modal-title">Cerrar Sesión</div>
-            <p class="modal-text">¿Estás seguro que deseas salir del sistema?</p>
-            <div class="modal-buttons">
-                <button class="btn-confirm" id="confirmLogoutBtn">Sí, salir</button>
-                <button class="btn-cancel" onclick="closeLogoutModal()">Cancelar</button>
+            <div class="modal-title" style="color:var(--destructive); font-size:1.4rem; font-weight:800; margin-bottom:10px;">Cerrar Sesión</div>
+            <p class="modal-text" style="color:#555; margin-bottom:25px;">¿Estás seguro que deseas salir del sistema?</p>
+            <div class="modal-buttons" style="display:flex; gap:15px; justify-content:center;">
+                <button class="btn-confirm" id="confirmLogoutBtn" style="background:var(--destructive); color:white; border:none; padding:12px 25px; border-radius:12px; cursor:pointer; font-weight:700;">Sí, salir</button>
+                <button class="btn-cancel" onclick="closeLogoutModal()" style="background:#fff5f5; color:var(--primary); border:none; padding:12px 25px; border-radius:12px; cursor:pointer; font-weight:700;">Cancelar</button>
             </div>
         </div>
     </div>
 
     <script type="module">
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
-        import { getAuth, signOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+        import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
 
-        // ========================================================
-        // CONFIGURACIÓN ORIGINAL (secretarios-def3) - SE MANTIENE
-        // ========================================================
         const firebaseConfig = {
-            apiKey: "AIzaSyDhRdnI7u6fBBH9A5h31Y9WnDNopkZOlgE",
-            authDomain: "secretarios-def3.firebaseapp.com",
-            projectId: "secretarios-def3",
-            storageBucket: "secretarios-def3.firebasestorage.app",
-            messagingSenderId: "522102845445",
-            appId: "1:522102845445:web:bfdf7c211d8efad1a2ac6c"
+            apiKey: "AIzaSyDBisAdWcLk_hzZrWjvZUtmx3Dn2bYhqZk",
+            authDomain: "secretarios-def2.firebaseapp.com",
+            projectId: "secretarios-def2",
+            storageBucket: "secretarios-def2.firebasestorage.app",
+            messagingSenderId: "153016824405",
+            appId: "1:153016824405:web:14ca6c9d586d2d7a21dadc"
         };
 
         const app = initializeApp(firebaseConfig);
@@ -467,12 +378,12 @@
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 document.getElementById('userName').textContent = user.displayName || user.email;
+                if (user.photoURL) document.getElementById('userPhoto').src = user.photoURL;
             } else {
                 window.location.href = 'index.html';
             }
         });
 
-        // Lógica del Modal Logout
         window.logout = function() {
             document.getElementById('logoutModal').style.display = 'flex';
         };
@@ -485,14 +396,11 @@
             try {
                 await signOut(auth);
                 window.location.href = 'index.html';
-            } catch (error) {
-                console.error('Error:', error);
-            }
+            } catch (error) { console.error('Error:', error); }
         });
     </script>
 
     <script>
-        // Scripts de UI
         let menuOpen = false;
         function toggleMenu() {
             menuOpen = !menuOpen;
@@ -500,17 +408,17 @@
         }
 
         function openSection(url, title) {
-            const iframeContainer = document.getElementById("iframeContainer");
-            const iframe = document.getElementById("contentIframe");
-            const iframeTitle = document.getElementById("iframeTitle");
-            const welcomeScreen = document.getElementById("welcomeScreen");
-
-            iframeContainer.style.display = "block";
-            welcomeScreen.style.display = "none";
-            iframeTitle.textContent = title;
-            iframe.src = url;
-
+            document.getElementById("iframeContainer").style.display = "flex";
+            document.getElementById("welcomeScreen").style.display = "none";
+            document.getElementById("iframeTitle").textContent = title;
+            document.getElementById("contentIframe").src = url;
             if(menuOpen) toggleMenu();
+        }
+
+        function closeIframe() {
+            document.getElementById("iframeContainer").style.display = "none";
+            document.getElementById("welcomeScreen").style.display = "flex";
+            document.getElementById("contentIframe").src = "";
         }
 
         function openExternalSystem() {
@@ -518,23 +426,12 @@
             if(menuOpen) toggleMenu();
         }
 
-        function closeIframe() {
-            const iframeContainer = document.getElementById("iframeContainer");
-            const iframe = document.getElementById("contentIframe");
-            const welcomeScreen = document.getElementById("welcomeScreen");
-
-            iframeContainer.style.display = "none";
-            iframe.src = "";
-            welcomeScreen.style.display = "flex"; 
-        }
-
-        // Cerrar menú si se hace click fuera
         window.onclick = (e) => {
             const menu = document.getElementById('dropdownMenu');
-            const toggleBtn = document.getElementById('menuToggleBtn');
-            if (menuOpen && !menu.contains(e.target) && e.target !== toggleBtn) {
-                toggleMenu();
-            }
+            const btn = document.getElementById('menuToggleBtn');
+            const modal = document.getElementById('logoutModal');
+            if (menuOpen && !menu.contains(e.target) && e.target !== btn) toggleMenu();
+            if (e.target === modal) closeLogoutModal();
         }
     </script>
 </body>
