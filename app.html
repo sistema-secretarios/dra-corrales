@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema Secretarios</title>
+    <style>
+        /* =========================================
+           ESTILOS GLASSMORPHISM PÚRPURA
+           ========================================= */
+        :root {
+          --background-gradient: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%);
+          --foreground: #4a148c; 
+          --card: rgba(255, 255, 255, 0.65); 
+          --card-border: rgba(123, 31, 162, 0.3); 
+          --popover: rgba(255, 255, 255, 0.95);
+          --primary: #7b1fa2; 
+          --primary-foreground: #ffffff;
+          --secondary: #9c27b0;
+          --accent: rgba(123, 31, 162, 0.1); 
+          --destructive: #d32f2f; 
+          --destructive-foreground: #ffffff;
+          --radius: 1.5rem; 
+          --shadow-glass: 0 8px 32px 0 rgba(74, 20, 140, 0.15);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--background-gradient);
+            min-height: 100vh;
+            color: var(--foreground);
+            background-attachment: fixed;
+            overflow-x: hidden;
+        }
+
+        /* Navbar: AJUSTADA COMO FIXED */
+        .navbar {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            padding: 12px 25px;
+            box-shadow: 0 4px 20px rgba(106, 27, 154, 0.1);
+            position: fixed; 
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 70px;
+            z-index: 5000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--card-border);
+        }
+
+        /* Ajuste para que el contenido no se oculte tras la navbar fija */
+        .main-content {
+            padding-top: 75px; 
+            width: 100%;
+        }
+
+        .navbar-left { display: flex; align-items: center; gap: 15px; min-width: 0; }
+        .navbar-right { display: flex; align-items: center; gap: 15px; flex-shrink: 0; }
+        .navbar-brand { font-size: 22px; font-weight: 800; color: var(--primary); white-space: nowrap; letter-spacing: 0.5px; overflow: hidden; text-overflow: ellipsis; }
+
+        .menu-container { position: relative; }
+        
+        /* Estilo compartido para Menú y nuevos botones */
+        .menu-toggle, .btn-nav-custom {
+            background: var(--primary);
+            color: var(--primary-foreground);
+            border: none;
+            padding: 10px 18px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            min-width: 90px;
+            justify-content: center;
+            transition: transform 0.2s;
+        }
+        
+        .menu-toggle:hover, .btn-nav-custom:hover {
+            transform: translateY(-2px);
+            opacity: 0.9;
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 260px;
+            background: var(--popover);
+            border-radius: 1rem;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+            z-index: 5100;
+            margin-top: 8px;
+            border: 1px solid var(--card-border);
+            overflow: hidden;
+            display: none;
+            animation: slideDown 0.2s ease;
+        }
+        
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .dropdown-menu.active { display: block; }
+        .menu-section { padding: 8px 0; border-bottom: 1px solid rgba(0,0,0,0.05); }
+        .menu-items { max-height: 500px; overflow-y: auto; }
+        
+        .menu-item {
+            padding: 12px 20px;
+            display: block;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--foreground); 
+        }
+        .menu-item:hover { background: var(--accent); color: var(--primary); padding-left: 25px; }
+
+        .user-info { display: flex; align-items: center; gap: 12px; }
+        .profile-pic { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary); }
+        
+        .logout-btn { 
+            background: white; color: var(--destructive); border: 2px solid var(--destructive); 
+            padding: 8px 16px; border-radius: 12px; cursor: pointer; font-weight: 700; transition: 0.2s;
+        }
+        .logout-btn:hover { background: var(--destructive); color: white; }
+        
+        .welcome-text { font-size: 0.95em; font-weight: 700; color: var(--foreground); }
+
+        /* Estructura Principal */
+        .welcome-screen {
+            padding: 20px 40px;
+            height: calc(100vh - 80px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        .split-layout {
+            display: flex;
+            width: 100%;
+            max-width: 1400px;
+            height: 100%;
+            max-height: 800px;
+            gap: 40px;
+            align-items: stretch;
+        }
+
+        .left-panel {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.4);
+            border: 2px solid var(--primary);
+            border-radius: var(--radius);
+            padding: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: var(--shadow-glass);
+            backdrop-filter: blur(8px);
+        }
+
+        .mp-logo { width: 100%; height: auto; object-fit: contain; filter: drop-shadow(0 10px 10px rgba(0,0,0,0.1)); }
+
+        .right-panel {
+            flex: 2;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.5);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-glass);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .module-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+            grid-auto-rows: 1fr;
+            gap: 20px;
+            width: 100%;
+            height: 100%;
+        }
+
+        .rect-module {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 15px;
+            height: 100%; 
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            border: 1px solid rgba(255,255,255,0.6);
+            border-left-width: 6px;
+            border-left-style: solid;
+            color: var(--foreground);
+            font-weight: 700;
+            font-size: 15px;
+        }
+
+        .rect-module:hover { transform: translateY(-4px); background: #fff; box-shadow: 0 15px 30px rgba(123, 31, 162, 0.2); }
+
+        .rect-module:nth-child(1) { border-left-color: #d32f2f; }
+        .rect-module:nth-child(2) { border-left-color: #1976d2; }
+        .rect-module:nth-child(3) { border-left-color: #388e3c; }
+        .rect-module:nth-child(4) { border-left-color: #f57c00; }
+        .rect-module:nth-child(5) { border-left-color: #7b1fa2; }
+        .rect-module:nth-child(6) { border-left-color: #0097a7; }
+
+        .iframe-container { 
+            display: none; 
+            position: fixed; 
+            top: 0; left: 0; 
+            width: 100vw; height: 100vh; 
+            z-index: 4000; 
+            background: white;
+            flex-direction: column;
+            padding-top: 70px; 
+        }
+        
+        .iframe-header { 
+            background: #fff; 
+            padding: 10px 25px; 
+            border-bottom: 1px solid var(--card-border);
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            height: 50px;
+            flex-shrink: 0;
+        }
+        
+        .iframe-title { font-weight: 800; font-size: 18px; color: var(--primary); }
+        .content-iframe { width: 100%; flex: 1; border: none; }
+
+        @media (max-width: 850px) {
+            .navbar { padding: 10px; height: auto; flex-wrap: wrap; }
+            .navbar-brand { font-size: 14px; white-space: normal; line-height: 1.1; max-width: 150px; order: 1; }
+            .navbar-left { gap: 10px; width: 100%; order: 3; margin-top: 10px; overflow-x: auto; padding-bottom: 5px; }
+            .navbar-right { order: 2; }
+            .menu-toggle, .btn-nav-custom { padding: 8px 12px; font-size: 12px; min-width: auto; white-space: nowrap; }
+            #userName { display: none; } 
+            .logout-btn { padding: 8px 10px; font-size: 13px; }
+            .split-layout { flex-direction: column; height: auto; }
+            .left-panel { display: none; }
+            .right-panel { padding: 20px; height: auto; min-height: 400px; }
+            .welcome-screen { height: auto; padding: 20px; overflow-y: auto; }
+            .main-content { padding-top: 130px; }
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(74, 20, 140, 0.2); 
+            backdrop-filter: blur(8px);
+            display: none;
+            justify-content: center; align-items: center;
+            z-index: 6000;
+        }
+
+        .modal-content {
+            background: #fff; padding: 30px; border-radius: 20px; width: 90%; max-width: 350px; text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <nav class="navbar">
+            <div class="navbar-left">
+                <div class="menu-container">
+                    <button class="menu-toggle" id="menuToggleBtn" onclick="toggleMenu()">
+                        <span>☰</span> Menú
+                    </button>
+                    <div class="dropdown-menu" id="dropdownMenu">
+                        <div class="menu-items">
+                            <div class="menu-section">
+                                <div class="menu-item" onclick="openSection('causas.html', 'Mis Causas')">Mis causas</div>
+                                <div class="menu-item" onclick="openSection('agenda-clientes.html', 'Agenda de Clientes')">Agenda de Clientes</div>
+                                <div class="menu-item" onclick="openSection('control.html', 'Control de Causas')">Control de causas</div>
+                            </div>
+                            <div class="menu-section">
+                                <div class="menu-item" onclick="openSection('agenda.html', 'Calendario de Tareas')">Calendario de Tareas</div>
+                                <div class="menu-item" onclick="openSection('estadisticas.html', 'Estadísticas')">Estadistica de Tareas</div>
+                            </div>
+                            <div class="menu-section">
+                                <div class="menu-item" onclick="openExternalSystem()">Sistema Digital</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="btn-nav-custom" onclick="openSection('https://sistemadigital.github.io/IA/corrales', 'Asistente IA')">
+                    Asistente. IA
+                </button>
+                <button class="btn-nav-custom" onclick="openSection('https://sistemadigital.github.io/consultas-turnos/interno', 'Control Consultas y Turnos')">
+                    Control Consultas y Turnos
+                </button>
+
+                <div class="navbar-brand">Sistema Secretarios</div>
+            </div>
+            
+            <div class="navbar-right">
+                <div class="user-info">
+                    <span id="userName" class="welcome-text">Cargando...</span>
+                    <img class="profile-pic" src="https://github.com/sistemadigital/iconos/blob/main/mujer.png?raw=true" alt="Perfil">
+                    <button class="logout-btn" onclick="logout()">Salir</button>
+                </div>
+            </div>
+        </nav>
+
+        <main class="main-content">
+            <div id="welcomeScreen" class="welcome-screen">
+                <div class="split-layout">
+                    <div class="left-panel">
+                        <img src="https://github.com/sistemadigital/iconos/blob/main/MP.png?raw=true" alt="Ministerio Público" class="mp-logo">
+                    </div>
+                    
+                    <div class="right-panel">
+                        <div class="module-grid">
+                            <div class="rect-module" onclick="openSection('causas.html', 'Mis Causas')">Mis causas</div>
+                            <div class="rect-module" onclick="openSection('agenda-clientes.html', 'Agenda de Clientes')">Agenda de Clientes</div>
+                            <div class="rect-module" onclick="openSection('control.html', 'Control de Causas')">Control de causas</div>
+                            <div class="rect-module" onclick="openSection('agenda.html', 'Calendario de Tareas')">Calendario de Tareas</div>
+                            <div class="rect-module" onclick="openExternalSystem()">Sistema Digital</div>
+                            <div class="rect-module" onclick="openSection('estadisticas.html', 'Estadísticas')">Estadisticas</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="iframeContainer" class="iframe-container">
+                <div class="iframe-header">
+                    <div class="iframe-title" id="iframeTitle">Cargando...</div>
+                    <button onclick="closeIframe()" style="background:var(--destructive); color:white; border:none; padding:8px 20px; border-radius:10px; cursor:pointer; font-weight:bold;">✕ Cerrar</button>
+                </div>
+                <iframe id="contentIframe" class="content-iframe" src=""></iframe>
+            </div>
+        </main>
+    </div>
+
+    <div id="logoutModal" class="modal-overlay">
+        <div class="modal-content">
+            <h2 style="color:var(--destructive); margin-bottom:10px;">Cerrar Sesión</h2>
+            <p style="margin-bottom:25px;">¿Estás seguro que deseas salir del sistema?</p>
+            <div style="display:flex; gap:15px; justify-content:center;">
+                <button class="btn-confirm" id="confirmLogoutBtn" style="background:var(--destructive); color:white; border:none; padding:12px 25px; border-radius:12px; cursor:pointer; font-weight:700;">Sí, salir</button>
+                <button onclick="closeLogoutModal()" style="background:#f3e5f5; color:var(--primary); border:none; padding:12px 25px; border-radius:12px; cursor:pointer; font-weight:700;">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getAuth, signOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDhRdnI7u6fBBH9A5h31Y9WnDNopkZOlgE",
+            authDomain: "secretarios-def3.firebaseapp.com",
+            projectId: "secretarios-def3",
+            storageBucket: "secretarios-def3.firebasestorage.app",
+            messagingSenderId: "522102845445",
+            appId: "1:522102845445:web:bfdf7c211d8efad1a2ac6c"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                document.getElementById('userName').textContent = user.displayName || user.email;
+            } else {
+                window.location.href = 'index.html';
+            }
+        });
+
+        window.logout = () => { document.getElementById('logoutModal').style.display = 'flex'; };
+        window.closeLogoutModal = () => { document.getElementById('logoutModal').style.display = 'none'; };
+
+        document.getElementById('confirmLogoutBtn').addEventListener('click', async () => {
+            try { await signOut(auth); window.location.href = 'index.html'; } catch (e) { console.error(e); }
+        });
+    </script>
+
+    <script>
+        let menuOpen = false;
+        function toggleMenu() {
+            menuOpen = !menuOpen;
+            document.getElementById('dropdownMenu').classList.toggle('active');
+        }
+
+        function openSection(url, title) {
+            document.getElementById("iframeContainer").style.display = "flex"; 
+            document.getElementById("welcomeScreen").style.display = "none";
+            document.getElementById("iframeTitle").textContent = title;
+            document.getElementById("contentIframe").src = url;
+            if(menuOpen) toggleMenu();
+        }
+
+        function closeIframe() {
+            document.getElementById("iframeContainer").style.display = "none";
+            document.getElementById("welcomeScreen").style.display = "flex";
+            document.getElementById("contentIframe").src = "";
+        }
+
+        function openExternalSystem() {
+            window.open('https://sistemadigital.github.io/defensor-secretarios/index.html', '_blank');
+            if(menuOpen) toggleMenu();
+        }
+
+        window.onclick = (e) => {
+            const menu = document.getElementById('dropdownMenu');
+            const toggleBtn = document.getElementById('menuToggleBtn');
+            if (menuOpen && !menu.contains(e.target) && e.target !== toggleBtn) toggleMenu();
+            if (e.target === document.getElementById('logoutModal')) closeLogoutModal();
+        }
+    </script>
+</body>
+</html>
