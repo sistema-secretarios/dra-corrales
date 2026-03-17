@@ -230,15 +230,16 @@
         .rect-module:nth-child(5) { border-left-color: #7b1fa2; }
         .rect-module:nth-child(6) { border-left-color: #0097a7; }
 
+        /* Contenedor Iframe mejorado: Ahora superpone a todo el sistema */
         .iframe-container { 
             display: none; 
             position: fixed; 
             top: 0; left: 0; 
             width: 100vw; height: 100vh; 
-            z-index: 4000; 
+            z-index: 6000; /* Mayor que el navbar para que ocupe pantalla completa siempre */
             background: white;
             flex-direction: column;
-            padding-top: 70px; 
+            padding-top: 0; /* Removido padding, el header toma su propio espacio */
         }
         
         .iframe-header { 
@@ -248,27 +249,12 @@
             display: flex; 
             justify-content: space-between; 
             align-items: center; 
-            height: 50px;
+            height: 60px; /* Altura fija */
             flex-shrink: 0;
         }
         
         .iframe-title { font-weight: 800; font-size: 18px; color: var(--primary); }
         .content-iframe { width: 100%; flex: 1; border: none; }
-
-        @media (max-width: 850px) {
-            .navbar { padding: 10px; height: auto; flex-wrap: wrap; }
-            .navbar-brand { font-size: 14px; white-space: normal; line-height: 1.1; max-width: 150px; order: 1; }
-            .navbar-left { gap: 10px; width: 100%; order: 3; margin-top: 10px; overflow-x: auto; padding-bottom: 5px; }
-            .navbar-right { order: 2; }
-            .menu-toggle, .btn-nav-custom { padding: 8px 12px; font-size: 12px; min-width: auto; white-space: nowrap; }
-            #userName { display: none; } 
-            .logout-btn { padding: 8px 10px; font-size: 13px; }
-            .split-layout { flex-direction: column; height: auto; }
-            .left-panel { display: none; }
-            .right-panel { padding: 20px; height: auto; min-height: 400px; }
-            .welcome-screen { height: auto; padding: 20px; overflow-y: auto; }
-            .main-content { padding-top: 130px; }
-        }
 
         .modal-overlay {
             position: fixed;
@@ -278,11 +264,76 @@
             backdrop-filter: blur(8px);
             display: none;
             justify-content: center; align-items: center;
-            z-index: 6000;
+            z-index: 7000; /* Siempre por encima del iframe */
         }
 
         .modal-content {
             background: #fff; padding: 30px; border-radius: 20px; width: 90%; max-width: 350px; text-align: center;
+        }
+
+        /* =========================================
+           ESTILOS RESPONSIVOS MÓVILES
+           ========================================= */
+        @media (max-width: 850px) {
+            .navbar { 
+                padding: 15px; 
+                height: auto; 
+                flex-direction: column; 
+                gap: 12px;
+            }
+            
+            /* Usamos display: contents para aplanar la estructura y reordenar con flexbox */
+            .navbar-left, .navbar-right { display: contents; }
+            
+            .navbar-brand { 
+                order: 1; 
+                font-size: 20px; 
+                white-space: normal; 
+                text-align: center; 
+                width: 100%; 
+            }
+            
+            .user-info { 
+                order: 2; 
+                width: 100%; 
+                justify-content: center; 
+                border-bottom: 1px solid var(--card-border); 
+                padding-bottom: 15px;
+            }
+            
+            #userName { display: none; } /* Ocultamos el texto de bienvenida para ganar espacio */
+            
+            .menu-container { order: 3; width: 100%; }
+            .menu-toggle { width: 100%; }
+            
+            .dropdown-menu { width: 100%; top: 100%; left: 0; }
+            
+            .btn-nav-custom { order: 4; width: 100%; }
+
+            .main-content { padding-top: 220px; } /* Espacio para el Navbar expandido */
+
+            .welcome-screen { 
+                height: auto; 
+                padding: 15px; 
+                overflow-y: auto; 
+            }
+            
+            .split-layout { flex-direction: column; height: auto; gap: 20px; }
+            .left-panel { display: none; } /* Ocultamos el logo del MP en móviles */
+            .right-panel { padding: 15px; height: auto; background: transparent; box-shadow: none; border: none; }
+            
+            .module-grid { 
+                grid-template-columns: repeat(2, 1fr); /* 2 columnas precisas */
+                gap: 12px; 
+            }
+            
+            .rect-module { min-height: 110px; padding: 10px; font-size: 13px; }
+        }
+
+        @media (max-width: 480px) {
+            .module-grid { grid-template-columns: 1fr; } /* 1 columna en pantallas muy chicas */
+            .rect-module { min-height: 90px; }
+            .main-content { padding-top: 230px; }
         }
     </style>
 </head>
