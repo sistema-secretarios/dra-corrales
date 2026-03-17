@@ -307,7 +307,7 @@
             const actividades = { 'Total de Actividades': 0 };
             let contador = 0;
             
-            // Procesar causas
+            // Procesar causas (control.html) -> otrasActividades
             causasData.forEach(causa => {
                 if (causa.otrasActividades && Array.isArray(causa.otrasActividades)) {
                     const fechaInfo = obtenerMesYAnio(causa.fechaActualizacion);
@@ -319,7 +319,7 @@
                 }
             });
             
-            // Procesar miscausas
+            // Procesar miscausas (causas.html) -> actividades
             miscausasData.forEach(causa => {
                 if (causa.actividades && Array.isArray(causa.actividades)) {
                     const fechaInfo = obtenerMesYAnio(causa.fechaActualizacion);
@@ -402,32 +402,61 @@
             return prioridades;
         }
 
+        // ***** FUNCIÓN MODIFICADA PARA INCLUIR DATOS DE CONTROL (causas) *****
         function procesarPorFirmaDigital() {
             const firmas = { 'Firma Secretario': 0, 'Firma Defensor': 0, 'Sin Firma': 0 };
             let contador = 0;
             
+            // Procesar miscausas (provenientes de causas.html)
             miscausasData.forEach(doc => {
                 const fechaRef = doc.fechaActualizacion || doc.fechaHora || new Date().toISOString();
                 const fechaInfo = obtenerMesYAnio(fechaRef);
                 
                 if (filtroFecha(fechaInfo)) {
                     contador++;
+                    let tieneSecretario = false;
+                    let tieneDefensor = false;
                     
                     if (doc.firmaDigital && Array.isArray(doc.firmaDigital) && doc.firmaDigital.length > 0) {
-                        // Verificar si hay firma de secretario o defensor
-                        const firmaStr = JSON.stringify(doc.firmaDigital).toLowerCase();
-                        
-                        if (firmaStr.includes('secretario') || firmaStr.includes('secretaria')) {
-                            firmas['Firma Secretario']++;
-                        } else if (firmaStr.includes('defensor') || firmaStr.includes('defensora')) {
-                            firmas['Firma Defensor']++;
-                        } else {
-                            // Si hay firma pero no identificamos el tipo
-                            firmas['Firma Defensor']++;
-                        }
-                    } else {
-                        firmas['Sin Firma']++;
+                        doc.firmaDigital.forEach(item => {
+                            if (item.firmaDe === 'Secretario') {
+                                tieneSecretario = true;
+                            } else if (item.firmaDe === 'Defensor') {
+                                tieneDefensor = true;
+                            }
+                        });
                     }
+                    
+                    if (tieneSecretario) firmas['Firma Secretario']++;
+                    if (tieneDefensor) firmas['Firma Defensor']++;
+                    if (!tieneSecretario && !tieneDefensor) firmas['Sin Firma']++;
+                }
+            });
+            
+            // Procesar causas (provenientes de control.html)
+            causasData.forEach(doc => {
+                const fechaRef = doc.fechaActualizacion || doc.fechaHora || new Date().toISOString();
+                const fechaInfo = obtenerMesYAnio(fechaRef);
+                
+                if (filtroFecha(fechaInfo)) {
+                    contador++;
+                    let tieneSecretario = false;
+                    let tieneDefensor = false;
+                    
+                    if (doc.historial && Array.isArray(doc.historial) && doc.historial.length > 0) {
+                        doc.historial.forEach(item => {
+                            if (item.firmaSecretario === 'si') {
+                                tieneSecretario = true;
+                            }
+                            if (item.firmaDefensor === 'si') {
+                                tieneDefensor = true;
+                            }
+                        });
+                    }
+                    
+                    if (tieneSecretario) firmas['Firma Secretario']++;
+                    if (tieneDefensor) firmas['Firma Defensor']++;
+                    if (!tieneSecretario && !tieneDefensor) firmas['Sin Firma']++;
                 }
             });
             
