@@ -133,7 +133,7 @@
                     </div>
                     <div class="row g-3 mt-2">
                         <div class="col-md-12">
-                            <label class="form-label">Rango de Fecha de Pase</label>
+                            <label class="form-label">Rango de Fecha de Pase (desde Operador)</label>
                             <div class="d-flex align-items-center flex-wrap gap-2">
                                 <div class="input-group" style="flex:1;">
                                     <span class="input-group-text clickable-calendar" data-target="dateFilterStart"><i class="fas fa-calendar-alt"></i></span>
@@ -523,7 +523,7 @@
             if (currentFilters.proceso) { hasFilters = true; activeFilters.innerHTML += `<span class="badge bg-success">Proceso: "${currentFilters.proceso}"</span>`; }
             if (currentFilters.fechaInicio || currentFilters.fechaFin) {
                 hasFilters = true;
-                let fechaText = 'Fechas: ';
+                let fechaText = 'Fechas (desde Operador): ';
                 if (currentFilters.fechaInicio) fechaText += `Desde ${formatDateTime(currentFilters.fechaInicio)} `;
                 if (currentFilters.fechaFin) fechaText += `Hasta ${formatDateTime(currentFilters.fechaFin)}`;
                 activeFilters.innerHTML += `<span class="badge bg-danger">${fechaText}</span>`;
@@ -557,15 +557,21 @@
                 const matchesOperador = !operador || data.operadorAsignado === operador;
                 const matchesTipoIntervencion = !tipoIntervencion || data.tipoIntervencion === tipoIntervencion;
                 const matchesProceso = !proceso || data.tipoProceso === proceso;
+                
+                // --- MODIFICACIÓN AQUÍ: filtro por fechaPaseOperador en lugar de fechaPase ---
                 let matchesDate = true;
                 if (startDate || endDate) {
-                    const datePart = data.fechaPase ? data.fechaPase.split('T')[0] : null;
-                    if (!datePart) matchesDate = false;
-                    else {
+                    // Extraer solo la parte YYYY-MM-DD de fechaPaseOperador
+                    const datePart = data.fechaPaseOperador ? data.fechaPaseOperador.split('T')[0] : null;
+                    if (!datePart) {
+                        matchesDate = false; // Si no tiene fecha de pase desde operador, no cumple rango
+                    } else {
                         if (startDate && datePart < startDate) matchesDate = false;
                         if (endDate && datePart > endDate) matchesDate = false;
                     }
                 }
+                // ----------------------------------------------------------------
+                
                 return matchesSearch && matchesExpediente && matchesOperador && matchesTipoIntervencion && matchesProceso && matchesDate;
             });
 
@@ -587,8 +593,8 @@
 
             let html = `<div class="table-responsive"><table class="table table-hover"><thead class="table-light"><tr>
                 <th style="width: 50px;">#</th>
-                <th>Expediente</th><th>Proceso</th><th>Intervención</th><th>Operador Asignado</th><th>Fecha de Pase</th><th class="text-end">Acciones</th>
-             </tr></thead><tbody>`;
+                <th>Expediente</th><th>Proceso</th><th>Intervención</th><th>Operador Asignado</th><th>Fecha de Pase (desde Operador)</th><th class="text-end">Acciones</th>
+              </tr></thead><tbody>`;
             
             pageData.forEach((data, idx) => {
                 const rowNumber = filteredExpedientes.length - ((currentPage - 1) * itemsPerPage + idx);
@@ -603,7 +609,7 @@
                         <button class="btn btn-sm btn-outline-primary view-btn" data-id="${data.id}"><i class="fas fa-eye"></i></button>
                         <button class="btn btn-sm btn-outline-warning edit-btn" data-id="${data.id}"><i class="fas fa-edit"></i></button>
                     </td>
-                  </tr>`;
+                   </tr>`;
             });
             html += `</tbody></table></div><div class="text-muted mt-2">Mostrando ${start+1} - ${end} de ${filteredExpedientes.length}</div>`;
             expedientesContainer.innerHTML = html;
@@ -653,7 +659,6 @@
         async function editExpediente(id) {
             const data = allExpedientes.find(e => e.id === id);
             if (!data) return;
-            // Resetear formulario pero mantener los valores que vamos a cargar
             expedienteForm.reset();
             document.getElementById('expedienteId').value = data.id;
             document.getElementById('fechaPaseOperador').value = data.fechaPaseOperador || '';
@@ -666,7 +671,6 @@
             document.getElementById('fechaPase').value = data.fechaPase;
             document.getElementById('expedienteModalTitle').textContent = 'Editar Expediente';
             document.getElementById('saveExpedienteBtn').textContent = 'Actualizar Expediente';
-            // Quitar clase de error si existe
             numCausaInput.classList.remove('is-invalid');
             const modal = new bootstrap.Modal(expedienteModal);
             modal.show();
@@ -708,7 +712,7 @@
         function imprimirTodosExpedientes() {
             if (filteredExpedientes.length === 0) { showToast('No hay expedientes para imprimir.', 'error'); return; }
             let html = `<h2 class="text-center">Listado de Expedientes</h2><table class="table table-bordered"><thead>
-                <tr><th>#</th><th>Expediente</th><th>Proceso</th><th>Intervención</th><th>Operador</th><th>Fecha de Pase</th></tr>
+                <tr><th>#</th><th>Expediente</th><th>Proceso</th><th>Intervención</th><th>Operador</th><th>Fecha de Pase (desde Operador)</th></tr>
             </thead><tbody>`;
             filteredExpedientes.forEach((e, idx) => {
                 const rowNumber = filteredExpedientes.length - idx;
@@ -719,7 +723,7 @@
                     <td>${e.tipoIntervencion || ''}</td>
                     <td>${e.operadorAsignado}</td>
                     <td>${formatDateTime(e.fechaPaseOperador, true)}</td>
-                </tr>`;
+                 </tr>`;
             });
             html += `</tbody></table><div>Total: ${filteredExpedientes.length}</div>`;
             const win = window.open('', '_blank');
