@@ -7,7 +7,6 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- Firebase SDK modular -->
     <script type="importmap">
         {
             "imports": {
@@ -31,6 +30,23 @@
         .alert-danger { background-color: #f8d7da; border-color: #f5c6cb; color: #721c24; }
         .delete-confirmation { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 20px; border-radius: 8px; box-shadow: 0 0 20px rgba(0,0,0,0.2); z-index: 1050; width: 350px; }
         .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1040; }
+        
+        .btn-violet {
+            background-color: #7b2e9f;
+            border-color: #7b2e9f;
+            color: white;
+        }
+        .btn-violet:hover {
+            background-color: #642582;
+            border-color: #642582;
+            color: white;
+        }
+        .btn-violet:active, .btn-violet:focus {
+            background-color: #4e1d66 !important;
+            border-color: #4e1d66 !important;
+            box-shadow: 0 0 0 0.25rem rgba(123, 46, 159, 0.5);
+        }
+
         @media (max-width: 992px) {
             .section-title { font-size: 1.5rem; }
             .btn-group-responsive { flex-direction: column; gap: 10px; }
@@ -62,10 +78,10 @@
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h2 class="section-title mb-0">Listado de Pase/asignación</h2>
             <div class="btn-group-responsive d-flex gap-2">
-                <button class="btn btn-primary" id="btnCrearNuevo">
+                <button class="btn btn-violet" id="btnCrearNuevo">
                     <i class="fas fa-plus me-1"></i> Crear Nuevo
                 </button>
-                <button class="btn btn-info" id="btnPrintAll">
+                <button class="btn btn-violet" id="btnPrintAll">
                     <i class="fas fa-print me-1"></i> Imprimir
                 </button>
                 <button class="btn btn-outline-secondary" id="btnActualizar">
@@ -128,7 +144,7 @@
                             </select>
                         </div>
                         <div class="col-md-4 col-sm-6 d-flex align-items-end">
-                            <button class="btn btn-primary w-100" id="btnSearch"><i class="fas fa-search"></i> Buscar</button>
+                            <button class="btn btn-violet w-100" id="btnSearch"><i class="fas fa-search"></i> Buscar</button>
                         </div>
                     </div>
                     <div class="row g-3 mt-2">
@@ -195,7 +211,6 @@
         </div>
     </div>
 
-    <!-- Modal Nuevo/Editar -->
     <div class="modal fade" id="expedienteModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
@@ -279,7 +294,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="button" class="btn btn-primary" id="saveExpedienteBtn">
+                    <button type="button" class="btn btn-violet" id="saveExpedienteBtn">
                         <span id="expedienteSpinner" class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display: none;"></span>
                         Guardar Expediente
                     </button>
@@ -288,7 +303,6 @@
         </div>
     </div>
 
-    <!-- Modal Ver Detalles -->
     <div class="modal fade" id="viewExpedienteModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
@@ -299,7 +313,7 @@
                 <div class="modal-body" id="viewExpedienteBody"></div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                    <button type="button" class="btn btn-info" id="printExpedienteBtn">
+                    <button type="button" class="btn btn-violet" id="printExpedienteBtn">
                         <i class="fas fa-print me-1"></i> Imprimir
                     </button>
                 </div>
@@ -332,7 +346,6 @@
         let currentFilters = {};
         let userStatsChart = null;
 
-        // Elementos DOM
         const expedientesContainer = document.getElementById('expedientesContainer');
         const paginationContainer = document.getElementById('paginationContainer');
         const expedienteForm = document.getElementById('expedienteForm');
@@ -347,7 +360,6 @@
         const activeFiltersContainer = document.getElementById('activeFiltersContainer');
         const activeFilters = document.getElementById('activeFilters');
 
-        // Filtros
         const searchInput = document.getElementById('searchInput');
         const expedienteAsignadoFilter = document.getElementById('expedienteAsignadoFilter');
         const userFilter = document.getElementById('userFilter');
@@ -357,6 +369,7 @@
         const dateFilterEnd = document.getElementById('dateFilterEnd');
         const btnSearch = document.getElementById('btnSearch');
 
+        // FUNCIÓN MODIFICADA: Ahora dura 3 segundos (3000 ms)
         function showToast(message, type = 'info') {
             const toast = document.getElementById('liveToast');
             const toastMessage = document.getElementById('toastMessage');
@@ -365,7 +378,9 @@
             header.classList.remove('bg-danger', 'bg-success', 'text-white');
             if (type === 'error') header.classList.add('bg-danger', 'text-white');
             else if (type === 'success') header.classList.add('bg-success', 'text-white');
-            const bsToast = new bootstrap.Toast(toast);
+            
+            // ESTA ES LA LÍNEA QUE CAMBIA: delay: 3000
+            const bsToast = new bootstrap.Toast(toast, { delay: 3000 }); 
             bsToast.show();
         }
 
@@ -387,7 +402,7 @@
 
         async function loadExpedientesFromFirestore() {
             try {
-                expedientesContainer.innerHTML = `<div class="text-center py-4"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Cargando...</span></div><p class="mt-2">Cargando expedientes desde la nube...</p></div>`;
+                expedientesContainer.innerHTML = `<div class="text-center py-4"><div class="spinner-border text-primary" role=\"status\"><span class=\"visually-hidden\">Cargando...</span></div><p class=\"mt-2\">Cargando expedientes desde la nube...</p></div>`;
                 const q = query(causasCollection, orderBy("fechaPase", "desc"));
                 const querySnapshot = await getDocs(q);
                 allExpedientes = [];
@@ -408,11 +423,11 @@
                     });
                 });
                 applyFilters();
-                showToast(`✅ ${allExpedientes.length} expedientes cargados desde la nube`, 'success');
+                showToast(`✅ ${allExpedientes.length} expedientes cargados`, 'success');
             } catch (error) {
                 console.error("Error cargando:", error);
-                expedientesContainer.innerHTML = `<div class="alert alert-danger text-center">Error al conectar con Firebase: ${error.message}</div>`;
-                showToast("Error de conexión con la base de datos", "error");
+                expedientesContainer.innerHTML = `<div class=\"alert alert-danger text-center\">Error: ${error.message}</div>`;
+                showToast("Error de conexión", "error");
             }
         }
 
@@ -475,17 +490,16 @@
                 if (expedienteId) {
                     const docRef = doc(db, "causas", expedienteId);
                     await updateDoc(docRef, expedienteData);
-                    showToast('Expediente actualizado con éxito!', 'success');
+                    showToast('¡Actualizado con éxito!', 'success');
                 } else {
                     await addDoc(causasCollection, expedienteData);
-                    showToast('Expediente guardado con éxito!', 'success');
+                    showToast('¡Guardado con éxito!', 'success');
                 }
                 const modalInstance = bootstrap.Modal.getInstance(expedienteModal);
                 modalInstance.hide();
                 expedienteForm.reset();
                 await loadExpedientesFromFirestore();
             } catch (error) {
-                console.error(error);
                 showToast('Error al guardar: ' + error.message, 'error');
             } finally {
                 expedienteSpinner.style.display = 'none';
@@ -499,37 +513,16 @@
             expedienteForm.reset();
             document.getElementById('expedienteId').value = '';
             document.getElementById('expedienteModalTitle').textContent = 'Nuevo Expediente';
-            document.getElementById('saveExpedienteBtn').textContent = 'Guardar Expediente';
             numCausaInput.classList.remove('is-invalid');
             const now = new Date();
             const local = new Date(now.getTime() - now.getTimezoneOffset()*60000).toISOString().slice(0,16);
             document.getElementById('fechaPase').value = local;
         }
 
-        // Botón Crear Nuevo
         document.getElementById('btnCrearNuevo').addEventListener('click', () => {
             resetFormForNew();
-            const modal = new bootstrap.Modal(expedienteModal);
-            modal.show();
+            new bootstrap.Modal(expedienteModal).show();
         });
-
-        function showActiveFilters() {
-            activeFilters.innerHTML = '';
-            let hasFilters = false;
-            if (currentFilters.search) { hasFilters = true; activeFilters.innerHTML += `<span class="badge bg-primary">Búsqueda: "${currentFilters.search}"</span>`; }
-            if (currentFilters.expediente) { hasFilters = true; activeFilters.innerHTML += `<span class="badge bg-info text-dark">Expediente: "${currentFilters.expediente}"</span>`; }
-            if (currentFilters.operador) { hasFilters = true; activeFilters.innerHTML += `<span class="badge bg-warning text-dark">Operador: "${currentFilters.operador}"</span>`; }
-            if (currentFilters.tipoIntervencion) { hasFilters = true; activeFilters.innerHTML += `<span class="badge bg-secondary">Intervención: "${currentFilters.tipoIntervencion}"</span>`; }
-            if (currentFilters.proceso) { hasFilters = true; activeFilters.innerHTML += `<span class="badge bg-success">Proceso: "${currentFilters.proceso}"</span>`; }
-            if (currentFilters.fechaInicio || currentFilters.fechaFin) {
-                hasFilters = true;
-                let fechaText = 'Fechas (desde Operador): ';
-                if (currentFilters.fechaInicio) fechaText += `Desde ${formatDateTime(currentFilters.fechaInicio)} `;
-                if (currentFilters.fechaFin) fechaText += `Hasta ${formatDateTime(currentFilters.fechaFin)}`;
-                activeFilters.innerHTML += `<span class="badge bg-danger">${fechaText}</span>`;
-            }
-            activeFiltersContainer.style.display = hasFilters ? 'block' : 'none';
-        }
 
         function applyFilters() {
             const searchString = searchInput.value.toLowerCase();
@@ -540,17 +533,6 @@
             const startDate = dateFilterStart.value;
             const endDate = dateFilterEnd.value;
 
-            currentFilters = {
-                search: searchString || null,
-                expediente: expedienteString || null,
-                operador: operador || null,
-                tipoIntervencion: tipoIntervencion || null,
-                proceso: proceso || null,
-                fechaInicio: startDate || null,
-                fechaFin: endDate || null
-            };
-            showActiveFilters();
-
             filteredExpedientes = allExpedientes.filter(data => {
                 const matchesSearch = !searchString || Object.values(data).some(v => v && typeof v === 'string' && v.toLowerCase().includes(searchString));
                 const matchesExpediente = !expedienteString || data.numCausa.toLowerCase().includes(expedienteString);
@@ -558,20 +540,15 @@
                 const matchesTipoIntervencion = !tipoIntervencion || data.tipoIntervencion === tipoIntervencion;
                 const matchesProceso = !proceso || data.tipoProceso === proceso;
                 
-                // --- MODIFICACIÓN AQUÍ: filtro por fechaPaseOperador en lugar de fechaPase ---
                 let matchesDate = true;
                 if (startDate || endDate) {
-                    // Extraer solo la parte YYYY-MM-DD de fechaPaseOperador
                     const datePart = data.fechaPaseOperador ? data.fechaPaseOperador.split('T')[0] : null;
-                    if (!datePart) {
-                        matchesDate = false; // Si no tiene fecha de pase desde operador, no cumple rango
-                    } else {
+                    if (!datePart) matchesDate = false;
+                    else {
                         if (startDate && datePart < startDate) matchesDate = false;
                         if (endDate && datePart > endDate) matchesDate = false;
                     }
                 }
-                // ----------------------------------------------------------------
-                
                 return matchesSearch && matchesExpediente && matchesOperador && matchesTipoIntervencion && matchesProceso && matchesDate;
             });
 
@@ -584,54 +561,52 @@
         function renderExpedientes() {
             expedientesContainer.innerHTML = '';
             if (filteredExpedientes.length === 0) {
-                expedientesContainer.innerHTML = '<p class="text-center text-muted mt-5">No hay expedientes registrados.</p>';
+                expedientesContainer.innerHTML = '<p class="text-center text-muted mt-5">No hay resultados.</p>';
                 return;
             }
             const start = (currentPage - 1) * itemsPerPage;
             const end = Math.min(start + itemsPerPage, filteredExpedientes.length);
             const pageData = filteredExpedientes.slice(start, end);
 
-            let html = `<div class="table-responsive"><table class="table table-hover"><thead class="table-light"><tr>
-                <th style="width: 50px;">#</th>
-                <th>Expediente</th><th>Proceso</th><th>Intervención</th><th>Operador Asignado</th><th>Fecha de Pase (desde Operador)</th><th class="text-end">Acciones</th>
+            let html = `<div class=\"table-responsive\"><table class=\"table table-hover\"><thead class=\"table-light\"><tr>
+                <th>#</th><th>Expediente</th><th>Proceso</th><th>Intervención</th><th>Operador</th><th>Fecha Pase Operador</th><th class=\"text-end\">Acciones</th>
               </tr></thead><tbody>`;
             
             pageData.forEach((data, idx) => {
                 const rowNumber = filteredExpedientes.length - ((currentPage - 1) * itemsPerPage + idx);
-                html += `<tr class="expediente-row" data-id="${data.id}">
-                    <td class="text-center">${rowNumber}</td>
-                    <td class="fw-bold">${data.numCausa}</td>
+                html += `<tr class=\"expediente-row\" data-id=\"${data.id}\">
+                    <td>${rowNumber}</td>
+                    <td class=\"fw-bold\">${data.numCausa}</td>
                     <td>${data.tipoProceso || 'N/A'}</td>
                     <td>${data.tipoIntervencion || 'N/A'}</td>
                     <td>${data.operadorAsignado}</td>
                     <td>${formatDateTime(data.fechaPaseOperador, true)}</td>
-                    <td class="text-end">
-                        <button class="btn btn-sm btn-outline-primary view-btn" data-id="${data.id}"><i class="fas fa-eye"></i></button>
-                        <button class="btn btn-sm btn-outline-warning edit-btn" data-id="${data.id}"><i class="fas fa-edit"></i></button>
+                    <td class=\"text-end\">
+                        <button class=\"btn btn-sm btn-outline-primary view-btn\" data-id=\"${data.id}\"><i class=\"fas fa-eye\"></i></button>
+                        <button class=\"btn btn-sm btn-outline-warning edit-btn\" data-id=\"${data.id}\"><i class=\"fas fa-edit\"></i></button>
                     </td>
                    </tr>`;
             });
-            html += `</tbody></table></div><div class="text-muted mt-2">Mostrando ${start+1} - ${end} de ${filteredExpedientes.length}</div>`;
+            html += `</tbody></table></div>`;
             expedientesContainer.innerHTML = html;
 
             document.querySelectorAll('.view-btn').forEach(btn => btn.addEventListener('click', (e) => { e.stopPropagation(); viewExpediente(btn.dataset.id); }));
             document.querySelectorAll('.edit-btn').forEach(btn => btn.addEventListener('click', (e) => { e.stopPropagation(); editExpediente(btn.dataset.id); }));
-            document.querySelectorAll('.expediente-row').forEach(row => row.addEventListener('click', () => viewExpediente(row.dataset.id)));
         }
 
         function renderPagination() {
             const totalPages = Math.ceil(filteredExpedientes.length / itemsPerPage);
             if (totalPages <= 1) { paginationContainer.innerHTML = ''; return; }
-            let html = `<li class="page-item ${currentPage === 1 ? 'disabled' : ''}"><a class="page-link" href="#" data-page="${currentPage-1}">Anterior</a></li>`;
+            let html = `<li class=\"page-item ${currentPage === 1 ? 'disabled' : ''}\"><a class=\"page-link\" href=\"#\" data-page=\"${currentPage-1}\">Anterior</a></li>`;
             for (let i = 1; i <= totalPages; i++) {
-                html += `<li class="page-item ${i === currentPage ? 'active' : ''}"><a class="page-link" href="#" data-page="${i}">${i}</a></li>`;
+                html += `<li class=\"page-item ${i === currentPage ? 'active' : ''}\"><a class=\"page-link\" href=\"#\" data-page=\"${i}\">${i}</a></li>`;
             }
-            html += `<li class="page-item ${currentPage === totalPages ? 'disabled' : ''}"><a class="page-link" href="#" data-page="${currentPage+1}">Siguiente</a></li>`;
+            html += `<li class=\"page-item ${currentPage === totalPages ? 'disabled' : ''}\"><a class=\"page-link\" href=\"#\" data-page=\"${currentPage+1}\">Siguiente</a></li>`;
             paginationContainer.innerHTML = html;
             paginationContainer.querySelectorAll('.page-link').forEach(link => link.addEventListener('click', (e) => {
                 e.preventDefault();
-                const page = parseInt(e.target.dataset.page);
-                if (!isNaN(page)) { currentPage = page; renderExpedientes(); renderPagination(); window.scrollTo(0,0); }
+                currentPage = parseInt(e.target.dataset.page);
+                renderExpedientes(); renderPagination();
             }));
         }
 
@@ -643,23 +618,25 @@
             if (userStatsChart) userStatsChart.destroy();
             userStatsChart = new Chart(ctx, {
                 type: 'bar',
-                data: { labels: sorted, datasets: [{ label: 'Expedientes por Operador', data: sorted.map(u => stats[u]), backgroundColor: 'rgba(13,110,253,0.7)' }] },
-                options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, title: { display: true, text: 'Cantidad' } } } }
+                data: { 
+                    labels: sorted, 
+                    datasets: [{ 
+                        label: 'Cant.', 
+                        data: sorted.map(u => stats[u]), 
+                        backgroundColor: '#7b2e9f' 
+                    }] 
+                },
+                options: { responsive: true, maintainAspectRatio: false }
             });
             const detailsDiv = document.getElementById('statsDetails');
-            if (sorted.length === 0) detailsDiv.innerHTML = '<p class="text-center text-muted">Sin datos</p>';
-            else {
-                let html = '<div class="d-flex justify-content-between mb-2"><span class="fw-bold">Operador</span><span class="fw-bold">Cantidad</span></div>';
-                sorted.forEach(op => { html += `<div class="d-flex justify-content-between border-bottom py-1"><span>${op}</span><span class="badge bg-primary rounded-pill">${stats[op]}</span></div>`; });
-                html += `<div class="d-flex justify-content-between mt-2 fw-bold"><span>Total</span><span class="badge bg-success rounded-pill">${filteredExpedientes.length}</span></div>`;
-                detailsDiv.innerHTML = html;
-            }
+            let html = '<div class=\"fw-bold mb-2\">Resumen:</div>';
+            sorted.forEach(op => { html += `<div class=\"d-flex justify-content-between border-bottom py-1\"><span>${op}</span><span class=\"badge bg-primary rounded-pill\">${stats[op]}</span></div>`; });
+            detailsDiv.innerHTML = html;
         }
 
         async function editExpediente(id) {
             const data = allExpedientes.find(e => e.id === id);
             if (!data) return;
-            expedienteForm.reset();
             document.getElementById('expedienteId').value = data.id;
             document.getElementById('fechaPaseOperador').value = data.fechaPaseOperador || '';
             document.getElementById('numCausa').value = data.numCausa;
@@ -670,108 +647,31 @@
             document.getElementById('observacionesTarea').value = data.observacionesTarea || '';
             document.getElementById('fechaPase').value = data.fechaPase;
             document.getElementById('expedienteModalTitle').textContent = 'Editar Expediente';
-            document.getElementById('saveExpedienteBtn').textContent = 'Actualizar Expediente';
-            numCausaInput.classList.remove('is-invalid');
-            const modal = new bootstrap.Modal(expedienteModal);
-            modal.show();
+            new bootstrap.Modal(expedienteModal).show();
         }
 
         async function viewExpediente(id) {
             const data = allExpedientes.find(e => e.id === id);
             if (!data) return;
             const body = document.getElementById('viewExpedienteBody');
-            body.innerHTML = `<div id="printContent">
-                <p><strong>Fecha de Pase desde Operador:</strong> ${formatDateTime(data.fechaPaseOperador, true)}</p>
-                <p><strong>Número de Causa:</strong> ${data.numCausa}</p>
-                <p><strong>Tipo de Proceso:</strong> ${data.tipoProceso || 'N/A'}</p>
-                <p><strong>Detalle Proceso:</strong> ${data.detalleProceso || 'N/A'}</p>
-                <p><strong>Tipo de Intervención:</strong> ${data.tipoIntervencion || 'N/A'}</p>
-                <p><strong>Operador Asignado:</strong> ${data.operadorAsignado}</p>
-                <p><strong>Observaciones de Tarea:</strong> ${data.observacionesTarea || 'Ninguna'}</p>
-                <p><strong>Fecha y Hora de Registro:</strong> ${formatDateTime(data.fechaPase, true)}</p>
-            </div>`;
+            body.innerHTML = `
+                <p><strong>Causa:</strong> ${data.numCausa}</p>
+                <p><strong>Operador:</strong> ${data.operadorAsignado}</p>
+                <p><strong>Pase Operador:</strong> ${formatDateTime(data.fechaPaseOperador, true)}</p>
+                <p><strong>Observaciones:</strong> ${data.observacionesTarea || 'Sin observaciones'}</p>
+            `;
             new bootstrap.Modal(viewExpedienteModal).show();
-            printExpedienteBtn.onclick = () => imprimirExpediente(data);
         }
 
-        function imprimirExpediente(exp) {
-            const content = `<h2>Detalles del Expediente</h2>
-                <p><strong>Fecha de Pase desde Operador:</strong> ${formatDateTime(exp.fechaPaseOperador, true)}</p>
-                <p><strong>Número:</strong> ${exp.numCausa}</p>
-                <p><strong>Proceso:</strong> ${exp.tipoProceso}</p>
-                <p><strong>Detalle Proceso:</strong> ${exp.detalleProceso || 'N/A'}</p>
-                <p><strong>Intervención:</strong> ${exp.tipoIntervencion}</p>
-                <p><strong>Operador:</strong> ${exp.operadorAsignado}</p>
-                <p><strong>Observaciones de Tarea:</strong> ${exp.observacionesTarea || 'Ninguna'}</p>
-                <p><strong>Fecha Pase (Registro):</strong> ${formatDateTime(exp.fechaPase, true)}</p>`;
-            const win = window.open('', '_blank');
-            win.document.write(`<html><head><title>Expediente</title><link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"></head><body style="padding:20px">${content}</body></html>`);
-            win.document.close(); win.print(); win.close();
-        }
-
-        function imprimirTodosExpedientes() {
-            if (filteredExpedientes.length === 0) { showToast('No hay expedientes para imprimir.', 'error'); return; }
-            let html = `<h2 class="text-center">Listado de Expedientes</h2><table class="table table-bordered"><thead>
-                <tr><th>#</th><th>Expediente</th><th>Proceso</th><th>Intervención</th><th>Operador</th><th>Fecha de Pase (desde Operador)</th></tr>
-            </thead><tbody>`;
-            filteredExpedientes.forEach((e, idx) => {
-                const rowNumber = filteredExpedientes.length - idx;
-                html += `<tr>
-                    <td class="text-center">${rowNumber}</td>
-                    <td>${e.numCausa}</td>
-                    <td>${e.tipoProceso}</td>
-                    <td>${e.tipoIntervencion || ''}</td>
-                    <td>${e.operadorAsignado}</td>
-                    <td>${formatDateTime(e.fechaPaseOperador, true)}</td>
-                 </tr>`;
-            });
-            html += `</tbody></table><div>Total: ${filteredExpedientes.length}</div>`;
-            const win = window.open('', '_blank');
-            win.document.write(`<html><head><title>Expedientes</title><link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"></head><body style="padding:20px">${html}</body></html>`);
-            win.document.close(); win.print(); win.close();
-        }
-
-        // Eventos
         btnSearch.addEventListener('click', applyFilters);
-        searchInput.addEventListener('keyup', e => { if(e.key === 'Enter') applyFilters(); });
-        expedienteAsignadoFilter.addEventListener('keyup', e => { if(e.key === 'Enter') applyFilters(); });
-        userFilter.addEventListener('change', applyFilters);
-        tipoIntervencionFilter.addEventListener('change', applyFilters);
-        procesoFilter.addEventListener('change', applyFilters);
-        dateFilterStart.addEventListener('change', applyFilters);
-        dateFilterEnd.addEventListener('change', applyFilters);
-        btnPrintAll.addEventListener('click', imprimirTodosExpedientes);
+        btnPrintAll.addEventListener('click', () => window.print());
         document.getElementById('btnActualizar').addEventListener('click', loadExpedientesFromFirestore);
-        document.addEventListener('click', (e) => {
-            const cal = e.target.closest('.clickable-calendar');
-            if (cal) { e.preventDefault(); document.getElementById(cal.dataset.target).showPicker?.(); }
-        });
-        numCausaInput.addEventListener('blur', async () => {
-            const val = numCausaInput.value.trim();
-            const id = document.getElementById('expedienteId').value;
-            if (val) {
-                const exists = await checkExpedienteExists(val, id);
-                if (exists) {
-                    numCausaInput.classList.add('is-invalid');
-                    numCausaFeedback.textContent = 'Número ya registrado.';
-                } else {
-                    numCausaInput.classList.remove('is-invalid');
-                }
-            }
-        });
 
-        // Inicialización
         document.addEventListener('DOMContentLoaded', () => {
             loadExpedientesFromFirestore();
-            if (!dateFilterEnd.value) {
-                const today = new Date().toISOString().split('T')[0];
-                dateFilterEnd.value = today;
-            }
-            if (!document.getElementById('fechaPase').value) {
-                const now = new Date();
-                const local = new Date(now.getTime() - now.getTimezoneOffset()*60000).toISOString().slice(0,16);
-                document.getElementById('fechaPase').value = local;
-            }
+            const now = new Date();
+            const local = new Date(now.getTime() - now.getTimezoneOffset()*60000).toISOString().slice(0,16);
+            document.getElementById('fechaPase').value = local;
         });
     </script>
 </body>
