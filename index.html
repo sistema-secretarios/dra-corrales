@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title>Dra. Corrales - Secretaria</title>
     
     <!-- Fuente Inter -->
@@ -71,7 +71,7 @@
             width: 100%;
         }
 
-        /* --- PANEL IZQUIERDO (púrpura) --- */
+        /* --- PANEL IZQUIERDO (púrpura y animación de anillos) --- */
         .panel-izquierdo {
             flex: 2;
             display: flex;
@@ -117,6 +117,7 @@
             color: oklch(0.20 0.02 300);
         }
 
+        /* CONTENEDOR IMAGEN CON ANILLOS GIRATORIOS (ESTILO INDEX MODO, VERSIÓN PÚRPURA) */
         .img-container {
             flex: 1;
             display: flex;
@@ -125,18 +126,102 @@
             z-index: 1;
         }
 
-        .img-3d {
-            width: 100%;
-            max-width: 420px;
-            height: auto;
-            animation: float 6s ease-in-out infinite;
+        /* Wrapper para el anillo animado (versión púrpura) */
+        .img-wrapper {
+            position: relative;
+            display: inline-block;
+            border-radius: 50%;
+            animation: float 6s ease-in-out infinite, softPulsePurple 3s ease-in-out infinite;
         }
 
+        /* Anillo giratorio principal (gradiente cónico en tonos púrpura/magenta) */
+        .img-wrapper::before {
+            content: '';
+            position: absolute;
+            top: -15px;
+            left: -15px;
+            right: -15px;
+            bottom: -15px;
+            border-radius: 50%;
+            background: conic-gradient(
+                from 0deg,
+                #c084fc,
+                #a855f7,
+                #d946ef,
+                #7e22ce,
+                #c084fc
+            );
+            opacity: 0.85;
+            z-index: -1;
+            animation: rotateRing 4s linear infinite;
+            box-shadow: 0 0 20px rgba(168, 85, 247, 0.5);
+        }
+
+        /* Segundo anillo externo con blur y rotación inversa (púrpura translúcido) */
+        .img-wrapper::after {
+            content: '';
+            position: absolute;
+            top: -25px;
+            left: -25px;
+            right: -25px;
+            bottom: -25px;
+            border-radius: 50%;
+            background: conic-gradient(
+                from 90deg,
+                rgba(192, 132, 252, 0.35),
+                rgba(168, 85, 247, 0.35),
+                rgba(217, 70, 239, 0.35),
+                rgba(126, 34, 206, 0.35),
+                rgba(192, 132, 252, 0.35)
+            );
+            z-index: -2;
+            animation: rotateRingReverse 6s linear infinite;
+            filter: blur(10px);
+        }
+
+        /* Rotación anillo principal */
+        @keyframes rotateRing {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Rotación inversa anillo externo */
+        @keyframes rotateRingReverse {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(-360deg); }
+        }
+
+        /* Pulso púrpura suave (glow) */
+        @keyframes softPulsePurple {
+            0% { filter: drop-shadow(0 0 5px rgba(168, 85, 247, 0.4)); }
+            50% { filter: drop-shadow(0 0 22px rgba(192, 132, 252, 0.8)); }
+            100% { filter: drop-shadow(0 0 5px rgba(168, 85, 247, 0.4)); }
+        }
+
+        /* Flotación */
         @keyframes float {
             0%, 100% { transform: translateY(0); }
             50% { transform: translateY(-15px); }
         }
 
+        /* Imagen circular con transición suave */
+        .img-3d {
+            width: 100%;
+            max-width: 420px;
+            height: auto;
+            display: block;
+            border-radius: 50%;
+            box-shadow: 0 20px 35px -10px rgba(0,0,0,0.2);
+            transition: transform 0.3s ease;
+            object-fit: cover;
+            aspect-ratio: 1 / 1;
+        }
+
+        .img-3d:hover {
+            transform: scale(1.02);
+        }
+
+        /* Cintas decorativas superiores e inferiores (color púrpura) */
         .panel-izquierdo::before, .panel-izquierdo::after {
             content: "";
             position: absolute;
@@ -149,7 +234,7 @@
         .panel-izquierdo::before { top: 30px; }
         .panel-izquierdo::after { bottom: 30px; }
 
-        /* --- PANEL DERECHO (blanco) --- */
+        /* --- PANEL DERECHO (blanco, intacto) --- */
         .panel-derecho {
             flex: 1;
             display: flex;
@@ -314,14 +399,53 @@
             display: none;
         }
 
+        /* --- RESPONSIVE / MODO MÓVIL (ajuste de anillos) --- */
         @media (max-width: 1024px) {
-            .contenedor-principal { flex-direction: column; height: auto; overflow-y: auto; }
-            .panel-izquierdo { flex: none; padding: 60px 20px; text-align: center; flex-direction: column; }
-            .brand-container { align-items: center; max-width: 100%; margin-bottom: 30px; }
-            .info-institucional { border-left: none; border-top: 3px solid oklch(0.50 0.20 300); padding: 15px 0 0 0; }
-            .img-3d { max-width: 250px; margin-bottom: 20px; }
-            .panel-derecho { flex: none; padding: 40px 20px 80px 20px; }
-            .formulario-login h2 { justify-content: center; }
+            .contenedor-principal { 
+                flex-direction: column; 
+                height: auto; 
+                overflow-y: auto; 
+            }
+            .panel-izquierdo { 
+                flex: none; 
+                padding: 60px 20px; 
+                text-align: center; 
+                flex-direction: column; 
+            }
+            .brand-container { 
+                align-items: center; 
+                max-width: 100%; 
+                margin-bottom: 30px; 
+            }
+            .info-institucional { 
+                border-left: none; 
+                border-top: 3px solid oklch(0.50 0.20 300); 
+                padding: 15px 0 0 0; 
+            }
+            .img-3d { 
+                max-width: 250px; 
+                margin-bottom: 20px; 
+            }
+            .panel-derecho { 
+                flex: none; 
+                padding: 40px 20px 80px 20px; 
+            }
+            .formulario-login h2 { 
+                justify-content: center; 
+            }
+            /* Reducir tamaño de los anillos en móvil */
+            .img-wrapper::before {
+                top: -10px;
+                left: -10px;
+                right: -10px;
+                bottom: -10px;
+            }
+            .img-wrapper::after {
+                top: -18px;
+                left: -18px;
+                right: -18px;
+                bottom: -18px;
+            }
         }
     </style>
 </head>
@@ -334,7 +458,7 @@
 
     <div class="contenedor-principal">
         
-        <!-- PANEL IZQUIERDO -->
+        <!-- PANEL IZQUIERDO (Corrales + animación de anillos púrpura) -->
         <div class="panel-izquierdo">
             <div class="brand-container">
                 <h1 class="titulo-principal">Dra.<br>Corrales</h1>
@@ -347,18 +471,21 @@
             </div>
 
             <div class="img-container">
-                <img src="https://github.com/sistemadigital/iconos/blob/main/pc-violeta.png?raw=true" 
-                     alt="Sistema Digital" 
-                     class="img-3d">
+                <!-- Wrapper con animación de anillos giratorios (versión púrpura) -->
+                <div class="img-wrapper">
+                    <img src="https://github.com/sistemadigital/iconos/blob/main/pc-violeta.png?raw=true" 
+                         alt="Sistema Digital" 
+                         class="img-3d">
+                </div>
             </div>
         </div>
 
-        <!-- PANEL DERECHO -->
+        <!-- PANEL DERECHO (Login / Registro intacto) -->
         <div class="panel-derecho">
             <div class="formulario-login">
                 <h2>
                     Bienvenida
-                    <!-- SVG Power (copia exacta del index, pero color púrpura) -->
+                    <!-- SVG Power (color púrpura) -->
                     <svg id="powerIcon" class="power-icon" viewBox="0 0 24 24">
                         <path d="M18.36 6.64a9 9 0 1 1-12.73 0"></path>
                         <line x1="12" y1="2" x2="12" y2="12"></line>
@@ -379,7 +506,6 @@
                         <input type="password" id="loginPassword" placeholder="••••••••" required>
                     </div>
 
-                    <!-- Checkbox Mostrar contraseña (igual que index) -->
                     <label class="mostrar-clave">
                         <input type="checkbox" onchange="document.getElementById('loginPassword').type = this.checked ? 'text' : 'password'">
                         Mostrar contraseña
@@ -424,7 +550,7 @@
         </div>
     </div>
 
-    <!-- FIREBASE (configuración original de corrales) -->
+    <!-- FIREBASE (configuración original de Corrales, intacta) -->
     <script type="module">
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, updateProfile } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
@@ -474,7 +600,7 @@
                 isLoggingIn = true;
                 await signInWithEmailAndPassword(auth, email, password);
 
-                // Animación del icono (verde y más grueso)
+                // Animación del icono (verde éxito y más grueso)
                 const icon = document.getElementById('powerIcon');
                 if (icon) {
                     icon.style.stroke = '#28a745';
@@ -554,7 +680,7 @@
         });
     </script>
 
-    <!-- Script para desvanecer créditos -->
+    <!-- Script para desvanecer créditos a los 5 segundos -->
     <script>
         window.addEventListener('DOMContentLoaded', () => {
             const flotante = document.getElementById('creditos-flotante');
