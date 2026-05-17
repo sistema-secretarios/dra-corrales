@@ -132,6 +132,14 @@
             display: inline-block;
             border-radius: 50%;
             animation: float 6s ease-in-out infinite, softPulsePurple 3s ease-in-out infinite;
+            cursor: pointer;
+            outline: none;
+        }
+
+        /* Accesibilidad: foco visible */
+        .img-wrapper:focus-visible {
+            box-shadow: 0 0 0 4px #c084fc;
+            border-radius: 50%;
         }
 
         /* Anillo giratorio principal (gradiente cónico en tonos púrpura/magenta) */
@@ -155,6 +163,7 @@
             z-index: -1;
             animation: rotateRing 4s linear infinite;
             box-shadow: 0 0 20px rgba(168, 85, 247, 0.5);
+            transition: all 0.4s ease;
         }
 
         /* Segundo anillo externo con blur y rotación inversa (púrpura translúcido) */
@@ -177,6 +186,25 @@
             z-index: -2;
             animation: rotateRingReverse 6s linear infinite;
             filter: blur(10px);
+        }
+
+        /* --- ESTADOS DINÁMICOS DEL AUDIO (sobreescriben animaciones) --- */
+        .img-wrapper.cargando::before {
+            animation: rotateRing 1s linear infinite;
+            filter: saturate(1.5);
+        }
+
+        .img-wrapper.reproduciendo::before {
+            animation: rotateRing 2s linear infinite;
+            box-shadow: 0 0 35px rgba(192, 132, 252, 0.9);
+            background: conic-gradient(
+                from 0deg,
+                #e9d5ff,
+                #c084fc,
+                #a855f7,
+                #d946ef,
+                #e9d5ff
+            );
         }
 
         /* Rotación anillo principal */
@@ -215,10 +243,48 @@
             transition: transform 0.3s ease;
             object-fit: cover;
             aspect-ratio: 1 / 1;
+            pointer-events: none;
         }
 
         .img-3d:hover {
             transform: scale(1.02);
+        }
+
+        /* --- BADGE DE AUDIO (FLOTANTE) --- */
+        .audio-badge {
+            position: absolute;
+            bottom: 15px;
+            right: 15px;
+            background-color: #2d0a3d;
+            color: #ffffff;
+            width: 46px;
+            height: 46px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.25);
+            z-index: 10;
+            font-size: 1.1rem;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 2px solid #c084fc;
+        }
+
+        .img-wrapper:hover .audio-badge {
+            transform: scale(1.15);
+            background-color: #4c1d6b;
+        }
+
+        .img-wrapper.reproduciendo .audio-badge {
+            background-color: #28a745;
+            border-color: #ffffff;
+            animation: pulseBadge 1.5s infinite;
+        }
+
+        @keyframes pulseBadge {
+            0% { box-shadow: 0 0 0 0 rgba(40, 167, 69, 0.6); }
+            70% { box-shadow: 0 0 0 10px rgba(40, 167, 69, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(40, 167, 69, 0); }
         }
 
         /* Cintas decorativas superiores e inferiores (color púrpura) */
@@ -399,7 +465,7 @@
             display: none;
         }
 
-        /* --- RESPONSIVE / MODO MÓVIL (ajuste de anillos) --- */
+        /* --- RESPONSIVE / MODO MÓVIL (ajuste de anillos y badge) --- */
         @media (max-width: 1024px) {
             .contenedor-principal { 
                 flex-direction: column; 
@@ -446,6 +512,13 @@
                 right: -18px;
                 bottom: -18px;
             }
+            .audio-badge {
+                bottom: 5px;
+                right: 5px;
+                width: 38px;
+                height: 38px;
+                font-size: 0.9rem;
+            }
         }
     </style>
 </head>
@@ -458,7 +531,7 @@
 
     <div class="contenedor-principal">
         
-        <!-- PANEL IZQUIERDO (Corrales + animación de anillos púrpura) -->
+        <!-- PANEL IZQUIERDO (Corrales + animación de anillos púrpura + AUDIO) -->
         <div class="panel-izquierdo">
             <div class="brand-container">
                 <h1 class="titulo-principal">Dra.<br>Corrales</h1>
@@ -471,11 +544,19 @@
             </div>
 
             <div class="img-container">
-                <!-- Wrapper con animación de anillos giratorios (versión púrpura) -->
-                <div class="img-wrapper">
+                <!-- Wrapper con anillos giratorios + badge de audio interactivo -->
+                <div class="img-wrapper" 
+                     id="imagenClickAudio" 
+                     role="button" 
+                     tabindex="0" 
+                     aria-label="Escuchar saludo institucional de la Dra. Corrales" 
+                     title="Haga clic para escuchar o pausar el saludo">
+                    
                     <img src="https://github.com/sistemadigital/iconos/blob/main/pc-violeta.png?raw=true" 
-                         alt="Sistema Digital" 
+                         alt="Sistema Digital - Defensoría" 
                          class="img-3d">
+                    
+                    <div class="audio-badge" id="audioBadgeState" aria-hidden="true">🔊</div>
                 </div>
             </div>
         </div>
@@ -678,6 +759,98 @@
                 }
             }
         });
+    </script>
+
+    <!-- Script independiente para el reproductor de audio (saludo institucional) -->
+    <script>
+        (function() {
+            let currentAudio = null;
+            const AUDIO_URL = 'https://github.com/sistema-secretarios/dra-corrales/raw/refs/heads/main/dra%20corrales.mp3';
+            const imgWrapper = document.getElementById('imagenClickAudio');
+            const audioBadge = document.getElementById('audioBadgeState');
+
+            if (!imgWrapper || !audioBadge) return;
+
+            function toggleSaludo() {
+                // Si el audio está sonando, pausar inmediatamente
+                if (currentAudio && !currentAudio.paused) {
+                    currentAudio.pause();
+                    return;
+                }
+
+                // Crear nueva instancia si no existe o ya terminó
+                if (!currentAudio) {
+                    currentAudio = new Audio(AUDIO_URL);
+                    currentAudio.preload = 'auto';
+                    
+                    // Evento de espera (buffering)
+                    currentAudio.addEventListener('waiting', () => {
+                        imgWrapper.classList.add('cargando');
+                        audioBadge.textContent = '⏳';
+                    });
+                    
+                    // Reproducción activa
+                    currentAudio.addEventListener('playing', () => {
+                        imgWrapper.classList.remove('cargando');
+                        imgWrapper.classList.add('reproduciendo');
+                        audioBadge.textContent = '⏸️';
+                    });
+                    
+                    // Pausa manual o por sistema
+                    currentAudio.addEventListener('pause', () => {
+                        imgWrapper.classList.remove('reproduciendo', 'cargando');
+                        audioBadge.textContent = '🔊';
+                    });
+                    
+                    // Finalización natural
+                    currentAudio.addEventListener('ended', () => {
+                        imgWrapper.classList.remove('reproduciendo', 'cargando');
+                        audioBadge.textContent = '🔊';
+                        currentAudio.currentTime = 0;
+                    });
+                    
+                    // Error de red o carga
+                    currentAudio.addEventListener('error', (e) => {
+                        imgWrapper.classList.remove('reproduciendo', 'cargando');
+                        audioBadge.textContent = '⚠️';
+                        console.error('Error al cargar el audio:', e);
+                    });
+                } else if (currentAudio.paused && currentAudio.currentTime > 0 && currentAudio.readyState >= 2) {
+                    // Reanudar desde donde quedó (si no terminó)
+                    imgWrapper.classList.add('cargando');
+                    audioBadge.textContent = '⏳';
+                    currentAudio.play().catch(err => {
+                        imgWrapper.classList.remove('cargando');
+                        audioBadge.textContent = '🔊';
+                        console.warn('Error al reanudar:', err);
+                    });
+                    return;
+                }
+                
+                // En cualquier otro caso (primera reproducción o después de ended) iniciar desde cero
+                imgWrapper.classList.add('cargando');
+                audioBadge.textContent = '⏳';
+                currentAudio.play().catch(error => {
+                    imgWrapper.classList.remove('cargando');
+                    audioBadge.textContent = '🔊';
+                    console.warn('Reproducción bloqueada o error:', error);
+                });
+            }
+
+            // Asignar eventos al wrapper
+            imgWrapper.addEventListener('click', (e) => {
+                e.stopPropagation();
+                toggleSaludo();
+            });
+
+            imgWrapper.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    toggleSaludo();
+                }
+            });
+        })();
     </script>
 
     <!-- Script para desvanecer créditos a los 5 segundos -->
