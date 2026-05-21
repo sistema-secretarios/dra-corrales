@@ -64,22 +64,29 @@
             transform: translateY(-20px) !important;
         }
 
-        /* --- CONTENEDOR PRINCIPAL --- */
+        /* --- CONTENEDOR PRINCIPAL (panel único centrado) --- */
         .contenedor-principal {
             display: flex;
-            height: 100vh;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
             width: 100%;
+            padding: 2rem;
         }
 
-        /* --- PANEL IZQUIERDO (púrpura y animación de anillos) --- */
-        .panel-izquierdo {
-            flex: 2;
+        .panel-unico {
+            flex: 1;
+            max-width: 1300px;
             display: flex;
+            flex-wrap: wrap;
             align-items: center;
-            justify-content: space-around;
-            position: relative;
-            padding: 0 5%;
+            justify-content: center;
+            gap: 3rem;
             background: radial-gradient(circle at 10% 50%, #f3e5f5 0%, #ffffff 100%);
+            border-radius: 3rem;
+            padding: 2rem 3rem;
+            position: relative;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.15);
         }
 
         .brand-container {
@@ -87,13 +94,13 @@
             flex-direction: column;
             align-items: flex-start;
             z-index: 2;
-            max-width: 50%;
+            max-width: 45%;
         }
 
         .titulo-principal {
             font-size: clamp(3rem, 8vw, 5.5rem);
             font-weight: 900;
-            line-height: 0.85;
+            line-height: 1.1;
             letter-spacing: -0.05em;
             margin-bottom: 20px;
             color: oklch(0.35 0.18 300);
@@ -117,7 +124,7 @@
             color: oklch(0.20 0.02 300);
         }
 
-        /* CONTENEDOR IMAGEN CON ANILLOS GIRATORIOS (ESTILO INDEX MODO, VERSIÓN PÚRPURA) */
+        /* CONTENEDOR IMAGEN CON ANILLOS GIRATORIOS (SIN BADGE) */
         .img-container {
             flex: 1;
             display: flex;
@@ -126,7 +133,6 @@
             z-index: 1;
         }
 
-        /* Wrapper para el anillo animado (versión púrpura) */
         .img-wrapper {
             position: relative;
             display: inline-block;
@@ -136,13 +142,12 @@
             outline: none;
         }
 
-        /* Accesibilidad: foco visible */
         .img-wrapper:focus-visible {
             box-shadow: 0 0 0 4px #c084fc;
             border-radius: 50%;
         }
 
-        /* Anillo giratorio principal (gradiente cónico en tonos púrpura/magenta) */
+        /* Anillo giratorio principal */
         .img-wrapper::before {
             content: '';
             position: absolute;
@@ -166,7 +171,7 @@
             transition: all 0.4s ease;
         }
 
-        /* Segundo anillo externo con blur y rotación inversa (púrpura translúcido) */
+        /* Segundo anillo externo con blur */
         .img-wrapper::after {
             content: '';
             position: absolute;
@@ -188,7 +193,7 @@
             filter: blur(10px);
         }
 
-        /* --- ESTADOS DINÁMICOS DEL AUDIO (sobreescriben animaciones) --- */
+        /* Estados dinámicos del audio sobre los anillos */
         .img-wrapper.cargando::before {
             animation: rotateRing 1s linear infinite;
             filter: saturate(1.5);
@@ -207,32 +212,27 @@
             );
         }
 
-        /* Rotación anillo principal */
         @keyframes rotateRing {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
 
-        /* Rotación inversa anillo externo */
         @keyframes rotateRingReverse {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(-360deg); }
         }
 
-        /* Pulso púrpura suave (glow) */
         @keyframes softPulsePurple {
             0% { filter: drop-shadow(0 0 5px rgba(168, 85, 247, 0.4)); }
             50% { filter: drop-shadow(0 0 22px rgba(192, 132, 252, 0.8)); }
             100% { filter: drop-shadow(0 0 5px rgba(168, 85, 247, 0.4)); }
         }
 
-        /* Flotación */
         @keyframes float {
             0%, 100% { transform: translateY(0); }
             50% { transform: translateY(-15px); }
         }
 
-        /* Imagen circular con transición suave */
         .img-3d {
             width: 100%;
             max-width: 420px;
@@ -250,98 +250,87 @@
             transform: scale(1.02);
         }
 
-        /* --- BADGE DE AUDIO (FLOTANTE) --- */
-        .audio-badge {
-            position: absolute;
-            bottom: 15px;
-            right: 15px;
-            background-color: #2d0a3d;
-            color: #ffffff;
-            width: 46px;
-            height: 46px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.25);
-            z-index: 10;
-            font-size: 1.1rem;
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            border: 2px solid #c084fc;
-        }
-
-        .img-wrapper:hover .audio-badge {
-            transform: scale(1.15);
-            background-color: #4c1d6b;
-        }
-
-        .img-wrapper.reproduciendo .audio-badge {
-            background-color: #28a745;
-            border-color: #ffffff;
-            animation: pulseBadge 1.5s infinite;
-        }
-
-        @keyframes pulseBadge {
-            0% { box-shadow: 0 0 0 0 rgba(40, 167, 69, 0.6); }
-            70% { box-shadow: 0 0 0 10px rgba(40, 167, 69, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(40, 167, 69, 0); }
-        }
-
-        /* Cintas decorativas superiores e inferiores (color púrpura) */
-        .panel-izquierdo::before, .panel-izquierdo::after {
+        /* Cintas decorativas */
+        .panel-unico::before, .panel-unico::after {
             content: "";
             position: absolute;
+            left: 30px;
+            right: 30px;
+            height: 8px;
+            background: oklch(0.50 0.20 300);
+            opacity: 0.25;
+            border-radius: 4px;
+        }
+        .panel-unico::before { top: 30px; }
+        .panel-unico::after { bottom: 30px; }
+
+        /* --- MODALES ESTILO PÚRPURA --- */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
             left: 0;
             width: 100%;
-            height: 12px;
-            background: oklch(0.50 0.20 300);
-            opacity: 0.20;
-        }
-        .panel-izquierdo::before { top: 30px; }
-        .panel-izquierdo::after { bottom: 30px; }
-
-        /* --- PANEL DERECHO (blanco, intacto) --- */
-        .panel-derecho {
-            flex: 1;
+            height: 100%;
+            background-color: rgba(30, 10, 45, 0.85);
+            backdrop-filter: blur(6px);
             display: flex;
             align-items: center;
             justify-content: center;
-            background-color: #ffffff;
-            box-shadow: -15px 0 50px rgba(0, 0, 0, 0.04);
-            z-index: 10;
+            z-index: 2000;
+            visibility: hidden;
+            opacity: 0;
+            transition: visibility 0.2s, opacity 0.2s ease;
         }
 
-        .formulario-login {
-            width: 100%;
-            max-width: 320px;
+        .modal-overlay.active {
+            visibility: visible;
+            opacity: 1;
         }
 
-        .formulario-login h2 {
-            font-weight: 900;
-            font-size: 2rem;
-            margin-bottom: 25px;
-            letter-spacing: -0.03em;
+        .modal-contenido {
+            background: #ffffff;
+            max-width: 460px;
+            width: 90%;
+            border-radius: 2rem;
+            padding: 2rem 1.8rem;
+            box-shadow: 0 30px 50px rgba(0,0,0,0.4);
+            position: relative;
+            transform: scale(0.95);
+            transition: transform 0.2s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            border-top: 6px solid oklch(0.50 0.20 300);
+        }
+
+        .modal-overlay.active .modal-contenido {
+            transform: scale(1);
+        }
+
+        .btn-cerrar-modal {
+            position: absolute;
+            top: 1.2rem;
+            right: 1.4rem;
+            background: none;
+            border: none;
+            font-size: 1.8rem;
+            cursor: pointer;
+            color: #aaa;
+            transition: 0.2s;
+            line-height: 1;
+        }
+
+        .btn-cerrar-modal:hover {
             color: oklch(0.35 0.18 300);
-            display: flex;
-            align-items: center;
-            gap: 8px;
         }
 
-        .power-icon {
-            width: 0.9em;
-            height: 0.9em;
-            stroke: oklch(0.35 0.18 300);
-            stroke-width: 3.5;
-            stroke-linecap: round;
-            stroke-linejoin: round;
-            fill: none;
-            transition: all 0.4s ease;
-            vertical-align: middle;
-            margin-bottom: 4px;
+        .modal-contenido h3 {
+            font-weight: 900;
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            color: oklch(0.35 0.18 300);
+            letter-spacing: -0.02em;
         }
 
         .grupo-input {
-            margin-bottom: 18px;
+            margin-bottom: 1.2rem;
             display: flex;
             flex-direction: column;
             gap: 6px;
@@ -350,156 +339,118 @@
         .grupo-input label {
             font-size: 0.7rem;
             font-weight: 700;
-            color: #aaa;
+            color: #5a4a6e;
             text-transform: uppercase;
         }
 
         .grupo-input input {
             padding: 14px;
-            border: 1px solid #eef0f2;
-            border-radius: 12px;
-            font-size: 1rem;
-            background-color: #f8fafc;
-            transition: all 0.3s;
+            border: 1px solid #e2d5eb;
+            border-radius: 18px;
+            font-size: 0.95rem;
+            background-color: #fef9ff;
+            transition: all 0.2s;
             width: 100%;
         }
 
         .grupo-input input:focus {
             outline: none;
-            border-color: oklch(0.50 0.20 300);
-            box-shadow: 0 0 0 4px oklch(0.50 0.20 300 / 0.15);
+            border-color: #c084fc;
+            box-shadow: 0 0 0 3px rgba(192, 132, 252, 0.2);
         }
 
         .mostrar-clave {
             display: flex;
             align-items: center;
             gap: 8px;
-            font-size: 0.85rem;
-            color: #666;
+            font-size: 0.8rem;
+            color: #2d0a3d;
+            margin: -5px 0 12px 0;
             cursor: pointer;
-            margin-top: -10px;
-            margin-bottom: 15px;
         }
 
-        .mostrar-clave input {
-            cursor: pointer;
-            width: auto;
-        }
-
-        .btn-ingresar {
+        .btn-modal-primario {
             width: 100%;
-            padding: 16px;
+            padding: 14px;
             background: oklch(0.50 0.20 300);
             color: white;
             border: none;
-            border-radius: 12px;
+            border-radius: 40px;
+            font-weight: 800;
             font-size: 1rem;
-            font-weight: 700;
             cursor: pointer;
-            margin-top: 10px;
-            transition: 0.3s;
+            margin-top: 8px;
+            transition: 0.2s;
         }
 
-        .btn-ingresar:hover {
-            transform: translateY(-2px);
+        .btn-modal-primario:hover {
             background: oklch(0.35 0.18 300);
-        }
-
-        .btn-secundario {
-            width: 100%;
-            padding: 16px;
-            background: transparent;
-            color: oklch(0.50 0.20 300);
-            border: 2px solid oklch(0.50 0.20 300);
-            border-radius: 12px;
-            font-size: 1rem;
-            font-weight: 700;
-            cursor: pointer;
-            margin-top: 10px;
-            transition: 0.3s;
-        }
-
-        .btn-secundario:hover {
-            background: oklch(0.50 0.20 300 / 0.05);
             transform: translateY(-2px);
         }
 
-        .divider {
-            display: flex;
-            align-items: center;
-            margin: 20px 0;
-            color: #aaa;
-            font-size: 0.8rem;
-            text-transform: uppercase;
-        }
-
-        .divider::before,
-        .divider::after {
-            content: "";
-            flex: 1;
-            height: 1px;
-            background: #eef0f2;
-            margin: 0 10px;
-        }
-
-        .auth-message {
-            padding: 12px;
-            border-radius: 12px;
-            margin-bottom: 20px;
+        .enlace-modal {
             text-align: center;
+            margin-top: 1.2rem;
+            font-size: 0.85rem;
+        }
+
+        .enlace-modal span {
+            color: #a855f7;
+            font-weight: 700;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+        /* Toast de mensajes global */
+        .auth-message-global {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1e2a36;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 60px;
             font-size: 0.9rem;
+            z-index: 2100;
             display: none;
+            backdrop-filter: blur(8px);
+            background: rgba(45, 10, 61, 0.95);
+            font-weight: 500;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.2);
+            text-align: center;
+            max-width: 85vw;
         }
 
-        .error-message {
-            background: oklch(0.60 0.18 25 / 0.1);
-            color: oklch(0.60 0.18 25);
+        .auth-message-global.error {
+            background: #c0392b;
         }
 
-        .success-message {
-            background: oklch(0.60 0.15 150 / 0.1);
-            color: #1b5e20;
+        .auth-message-global.success {
+            background: #2c6e2f;
         }
 
-        .hidden {
-            display: none;
-        }
-
-        /* --- RESPONSIVE / MODO MÓVIL (ajuste de anillos y badge) --- */
+        /* Responsive */
         @media (max-width: 1024px) {
-            .contenedor-principal { 
-                flex-direction: column; 
-                height: auto; 
-                overflow-y: auto; 
+            .panel-unico {
+                flex-direction: column;
+                text-align: center;
+                padding: 2rem 1.5rem;
+                gap: 2rem;
             }
-            .panel-izquierdo { 
-                flex: none; 
-                padding: 60px 20px; 
-                text-align: center; 
-                flex-direction: column; 
+            .brand-container {
+                align-items: center;
+                max-width: 100%;
             }
-            .brand-container { 
-                align-items: center; 
-                max-width: 100%; 
-                margin-bottom: 30px; 
+            .info-institucional {
+                border-left: none;
+                border-top: 3px solid oklch(0.50 0.20 300);
+                padding: 15px 0 0 0;
+                text-align: center;
             }
-            .info-institucional { 
-                border-left: none; 
-                border-top: 3px solid oklch(0.50 0.20 300); 
-                padding: 15px 0 0 0; 
+            .img-3d {
+                max-width: 280px;
             }
-            .img-3d { 
-                max-width: 250px; 
-                margin-bottom: 20px; 
-            }
-            .panel-derecho { 
-                flex: none; 
-                padding: 40px 20px 80px 20px; 
-            }
-            .formulario-login h2 { 
-                justify-content: center; 
-            }
-            /* Reducir tamaño de los anillos en móvil */
             .img-wrapper::before {
                 top: -10px;
                 left: -10px;
@@ -512,12 +463,14 @@
                 right: -18px;
                 bottom: -18px;
             }
-            .audio-badge {
-                bottom: 5px;
-                right: 5px;
-                width: 38px;
-                height: 38px;
-                font-size: 0.9rem;
+        }
+
+        @media (max-width: 640px) {
+            .modal-contenido {
+                padding: 1.5rem;
+            }
+            .titulo-principal {
+                font-size: 3rem;
             }
         }
     </style>
@@ -526,112 +479,97 @@
 
     <div id="creditos-flotante">
         <span class="texto-autor">Diseño y programación: Rómulo Fioravante</span>
-        <span class="texto-version">Versión 3.1.2026</span>
+        <span class="texto-version">Versión 3.2.2026 - Acceso modal</span>
     </div>
 
     <div class="contenedor-principal">
-        
-        <!-- PANEL IZQUIERDO (Corrales + animación de anillos púrpura + AUDIO) -->
-        <div class="panel-izquierdo">
+        <div class="panel-unico">
             <div class="brand-container">
-                <h1 class="titulo-principal">Dra.<br>Corrales</h1>
+                <!-- Título en una sola línea: Dra. Corrales -->
+                <h1 class="titulo-principal">Dra. Corrales</h1>
                 <p class="subtitulo-azul">Defensoría Civil y Comercial 6</p>
-                
                 <div class="info-institucional">
                     <p>MINISTERIO PÚBLICO DE MISIONES</p>
                     <p>Acceso Exclusivo de Secretaria</p>
+                    <!-- Texto sin emoji -->
+                    <p style="font-size: 0.85rem; margin-top: 10px;">Haz clic en la imagen para acceder</p>
                 </div>
             </div>
 
             <div class="img-container">
-                <!-- Wrapper con anillos giratorios + badge de audio interactivo -->
+                <!-- Wrapper con anillos giratorios (sin badge de audio) -->
                 <div class="img-wrapper" 
                      id="imagenClickAudio" 
                      role="button" 
                      tabindex="0" 
-                     aria-label="Escuchar saludo institucional de la Dra. Corrales" 
-                     title="Haga clic para escuchar o pausar el saludo">
-                    
+                     aria-label="Abrir acceso al sistema y escuchar saludo institucional" 
+                     title="Haz clic: abre inicio de sesión + audio">
                     <img src="https://github.com/sistemadigital/iconos/blob/main/pc-violeta.png?raw=true" 
                          alt="Sistema Digital - Defensoría" 
                          class="img-3d">
-                    
-                    <div class="audio-badge" id="audioBadgeState" aria-hidden="true">🔊</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- PANEL DERECHO (Login / Registro intacto) -->
-        <div class="panel-derecho">
-            <div class="formulario-login">
-                <h2>
-                    Bienvenida
-                    <!-- SVG Power (color púrpura) -->
-                    <svg id="powerIcon" class="power-icon" viewBox="0 0 24 24">
-                        <path d="M18.36 6.64a9 9 0 1 1-12.73 0"></path>
-                        <line x1="12" y1="2" x2="12" y2="12"></line>
-                    </svg>
-                </h2>
-
-                <div id="authMessage" class="auth-message"></div>
-
-                <!-- FORMULARIO DE LOGIN -->
-                <div id="loginForm">
-                    <div class="grupo-input">
-                        <label>Correo electrónico</label>
-                        <input type="email" id="loginEmail" placeholder="usuario Zimbra o email completo distinto" required>
-                    </div>
-
-                    <div class="grupo-input">
-                        <label>Contraseña</label>
-                        <input type="password" id="loginPassword" placeholder="••••••••" required>
-                    </div>
-
-                    <label class="mostrar-clave">
-                        <input type="checkbox" onchange="document.getElementById('loginPassword').type = this.checked ? 'text' : 'password'">
-                        Mostrar contraseña
-                    </label>
-
-                    <button class="btn-ingresar" onclick="loginUser()">Entrar al sistema</button>
-
-                    <div class="divider"><span>¿Nuevo integrante?</span></div>
-
-                    <button class="btn-secundario" onclick="showRegisterForm()">Crear cuenta</button>
-                </div>
-
-                <!-- FORMULARIO DE REGISTRO -->
-                <div id="registerForm" class="hidden">
-                    <div class="grupo-input">
-                        <label>Nombre completo</label>
-                        <input type="text" id="registerName" placeholder="Tu nombre y apellido" required>
-                    </div>
-
-                    <div class="grupo-input">
-                        <label>Correo electrónico</label>
-                        <input type="email" id="registerEmail" placeholder="usuario Zimbra o email distinto" required>
-                    </div>
-
-                    <div class="grupo-input">
-                        <label>Contraseña</label>
-                        <input type="password" id="registerPassword" placeholder="Mínimo 6 caracteres" required>
-                    </div>
-
-                    <label class="mostrar-clave">
-                        <input type="checkbox" onchange="document.getElementById('registerPassword').type = this.checked ? 'text' : 'password'">
-                        Mostrar contraseña
-                    </label>
-
-                    <button class="btn-ingresar" onclick="registerUser()">Registrarse</button>
-
-                    <div class="divider"><span>¿Ya tienes acceso?</span></div>
-
-                    <button class="btn-secundario" onclick="showLoginForm()">Volver al login</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- FIREBASE (configuración original de Corrales, intacta) -->
+    <!-- MODAL LOGIN -->
+    <div id="modalLogin" class="modal-overlay">
+        <div class="modal-contenido">
+            <button class="btn-cerrar-modal" id="cerrarModalLoginBtn">&times;</button>
+            <h3>Bienvenida</h3>
+            <div>
+                <div class="grupo-input">
+                    <label>Correo electrónico</label>
+                    <input type="email" id="loginEmail" placeholder="usuario o email@mpmisiones.gob.ar" autocomplete="email">
+                </div>
+                <div class="grupo-input">
+                    <label>Contraseña</label>
+                    <input type="password" id="loginPassword" placeholder="••••••••" autocomplete="current-password">
+                </div>
+                <label class="mostrar-clave">
+                    <input type="checkbox" id="mostrarLoginPass"> Mostrar contraseña
+                </label>
+                <button class="btn-modal-primario" id="btnLoginAction">Entrar al sistema</button>
+                <div class="enlace-modal">
+                    ¿No tienes cuenta? <span id="cambiarARegistroDesdeLogin">Regístrate aquí</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL REGISTRO -->
+    <div id="modalRegistro" class="modal-overlay">
+        <div class="modal-contenido">
+            <button class="btn-cerrar-modal" id="cerrarModalRegistroBtn">&times;</button>
+            <h3>Registro</h3>
+            <div>
+                <div class="grupo-input">
+                    <label>Nombre completo</label>
+                    <input type="text" id="registerName" placeholder="Nombre y apellido" autocomplete="name">
+                </div>
+                <div class="grupo-input">
+                    <label>Correo electrónico</label>
+                    <input type="email" id="registerEmail" placeholder="usuario o email@mpmisiones.gob.ar" autocomplete="email">
+                </div>
+                <div class="grupo-input">
+                    <label>Contraseña</label>
+                    <input type="password" id="registerPassword" placeholder="Mínimo 6 caracteres" autocomplete="new-password">
+                </div>
+                <label class="mostrar-clave">
+                    <input type="checkbox" id="mostrarRegPass"> Mostrar contraseña
+                </label>
+                <button class="btn-modal-primario" id="btnRegisterAction">Registrarse</button>
+                <div class="enlace-modal">
+                    ¿Ya tienes cuenta? <span id="cambiarALoginDesdeRegistro">Inicia sesión</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast para mensajes -->
+    <div id="globalAuthMessage" class="auth-message-global"></div>
+
+    <!-- FIREBASE (configuración ORIGINAL de Corrales) y lógica de autenticación + audio (sin badge) -->
     <script type="module">
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, updateProfile } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
@@ -647,7 +585,6 @@
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
-
         const DEFAULT_DOMAIN = "@mpmisiones.gob.ar";
 
         let isRegistering = false;
@@ -661,65 +598,65 @@
             return email;
         }
 
-        window.showMessage = function(msg, type) {
-            const div = document.getElementById('authMessage');
+        function showMessage(msg, type) {
+            const div = document.getElementById('globalAuthMessage');
             div.textContent = msg;
-            div.className = 'auth-message ' + (type === 'error' ? 'error-message' : 'success-message');
+            div.className = 'auth-message-global';
+            if (type === 'error') div.classList.add('error');
+            else if (type === 'success') div.classList.add('success');
             div.style.display = 'block';
-            setTimeout(() => div.style.display = 'none', 4000);
-        };
+            setTimeout(() => {
+                div.style.display = 'none';
+                div.classList.remove('error', 'success');
+            }, 4000);
+        }
 
+        // === LOGIN desde modal ===
         window.loginUser = async function() {
             const rawEmail = document.getElementById('loginEmail').value;
             const password = document.getElementById('loginPassword').value;
             const email = formatEmail(rawEmail);
 
             if (!email || !password) {
-                return showMessage('Completa todos los campos', 'error');
+                showMessage('Completa todos los campos', 'error');
+                return;
             }
             try {
                 isLoggingIn = true;
                 await signInWithEmailAndPassword(auth, email, password);
-
-                // Animación del icono (verde éxito y más grueso)
-                const icon = document.getElementById('powerIcon');
-                if (icon) {
-                    icon.style.stroke = '#28a745';
-                    icon.style.strokeWidth = '4.5';
-                }
-
-                showMessage('Acceso concedido. Iniciando sistema...', 'success');
-
+                showMessage('Acceso concedido. Redirigiendo...', 'success');
                 setTimeout(() => {
                     window.location.href = 'app.html';
-                }, 3000);
-
+                }, 2000);
             } catch (error) {
                 isLoggingIn = false;
                 showMessage('Credenciales inválidas', 'error');
             }
         };
 
+        // === REGISTRO desde modal ===
         window.registerUser = async function() {
-            const name = document.getElementById('registerName').value;
+            const name = document.getElementById('registerName').value.trim();
             const rawEmail = document.getElementById('registerEmail').value;
             const password = document.getElementById('registerPassword').value;
             const email = formatEmail(rawEmail);
 
             if (!name || !email || !password) {
-                return showMessage('Completa todos los campos', 'error');
+                showMessage('Completa todos los campos', 'error');
+                return;
             }
             if (password.length < 6) {
-                return showMessage('La contraseña debe tener al menos 6 caracteres', 'error');
+                showMessage('La contraseña debe tener al menos 6 caracteres', 'error');
+                return;
             }
-
             isRegistering = true;
-
             try {
                 const cred = await createUserWithEmailAndPassword(auth, email, password);
                 await updateProfile(cred.user, { displayName: name });
                 showMessage('Cuenta creada con éxito', 'success');
-                window.location.href = 'app.html';
+                setTimeout(() => {
+                    window.location.href = 'app.html';
+                }, 2000);
             } catch (error) {
                 isRegistering = false;
                 if (error.code === 'auth/email-already-in-use') {
@@ -730,139 +667,167 @@
             }
         };
 
+        // Redirección si ya está autenticado
         onAuthStateChanged(auth, user => {
-            // Solo redirigir automáticamente si no estamos en proceso de registro o login
-            if (user && !isRegistering && !isLoggingIn) {
+            if (user && !isRegistering && !isLoggingIn && (window.location.pathname.includes('index.html') || window.location.pathname === '/' || window.location.pathname === '')) {
                 window.location.href = 'app.html';
             }
         });
 
-        window.showRegisterForm = function() {
-            document.getElementById('loginForm').classList.add('hidden');
-            document.getElementById('registerForm').classList.remove('hidden');
-            document.getElementById('authMessage').style.display = 'none';
-        };
+        // === MANEJO DE MODALES ===
+        const modalLogin = document.getElementById('modalLogin');
+        const modalRegistro = document.getElementById('modalRegistro');
 
-        window.showLoginForm = function() {
-            document.getElementById('registerForm').classList.add('hidden');
-            document.getElementById('loginForm').classList.remove('hidden');
-            document.getElementById('authMessage').style.display = 'none';
-        };
+        function abrirModalLogin() {
+            modalLogin.classList.add('active');
+            document.getElementById('loginEmail').focus();
+        }
+        function cerrarModalLogin() {
+            modalLogin.classList.remove('active');
+        }
+        function abrirModalRegistro() {
+            modalRegistro.classList.add('active');
+            document.getElementById('registerName').focus();
+        }
+        function cerrarModalRegistro() {
+            modalRegistro.classList.remove('active');
+        }
 
-        document.addEventListener('keydown', function(event) {
-            if (event.key === 'Enter') {
-                const loginHidden = document.getElementById('loginForm').classList.contains('hidden');
-                if (!loginHidden) {
-                    loginUser();
-                } else {
-                    registerUser();
-                }
+        // Cerrar con X
+        document.getElementById('cerrarModalLoginBtn').addEventListener('click', cerrarModalLogin);
+        document.getElementById('cerrarModalRegistroBtn').addEventListener('click', cerrarModalRegistro);
+
+        // Cerrar al hacer clic fuera
+        modalLogin.addEventListener('click', (e) => {
+            if (e.target === modalLogin) cerrarModalLogin();
+        });
+        modalRegistro.addEventListener('click', (e) => {
+            if (e.target === modalRegistro) cerrarModalRegistro();
+        });
+
+        // Botones acción
+        document.getElementById('btnLoginAction').addEventListener('click', () => loginUser());
+        document.getElementById('btnRegisterAction').addEventListener('click', () => registerUser());
+
+        // Mostrar/ocultar contraseña
+        const mostrarLoginCheck = document.getElementById('mostrarLoginPass');
+        const loginPassInput = document.getElementById('loginPassword');
+        mostrarLoginCheck.addEventListener('change', () => {
+            loginPassInput.type = mostrarLoginCheck.checked ? 'text' : 'password';
+        });
+        const mostrarRegCheck = document.getElementById('mostrarRegPass');
+        const regPassInput = document.getElementById('registerPassword');
+        mostrarRegCheck.addEventListener('change', () => {
+            regPassInput.type = mostrarRegCheck.checked ? 'text' : 'password';
+        });
+
+        // Navegación entre modales
+        document.getElementById('cambiarARegistroDesdeLogin').addEventListener('click', () => {
+            cerrarModalLogin();
+            abrirModalRegistro();
+        });
+        document.getElementById('cambiarALoginDesdeRegistro').addEventListener('click', () => {
+            cerrarModalRegistro();
+            abrirModalLogin();
+        });
+
+        // Enter para login y registro
+        const loginEmailInput = document.getElementById('loginEmail');
+        const loginPasswordInput = document.getElementById('loginPassword');
+        const handleLoginEnter = (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                loginUser();
+            }
+        };
+        loginEmailInput.addEventListener('keypress', handleLoginEnter);
+        loginPasswordInput.addEventListener('keypress', handleLoginEnter);
+
+        const regNameInput = document.getElementById('registerName');
+        const regEmailInput = document.getElementById('registerEmail');
+        const regPasswordInput = document.getElementById('registerPassword');
+        const handleRegisterEnter = (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                registerUser();
+            }
+        };
+        regNameInput.addEventListener('keypress', handleRegisterEnter);
+        regEmailInput.addEventListener('keypress', handleRegisterEnter);
+        regPasswordInput.addEventListener('keypress', handleRegisterEnter);
+
+        // Escape cierra modales
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                if (modalLogin.classList.contains('active')) cerrarModalLogin();
+                if (modalRegistro.classList.contains('active')) cerrarModalRegistro();
             }
         });
-    </script>
 
-    <!-- Script independiente para el reproductor de audio (saludo institucional) -->
-    <script>
-        (function() {
-            let currentAudio = null;
-            const AUDIO_URL = 'https://github.com/sistema-secretarios/dra-corrales/raw/refs/heads/main/dra%20corrales.mp3';
-            const imgWrapper = document.getElementById('imagenClickAudio');
-            const audioBadge = document.getElementById('audioBadgeState');
+        // === AUDIO SIN BADGE (MP3 mantiene animación de anillos) ===
+        let currentAudio = null;
+        const imgWrapper = document.getElementById('imagenClickAudio');
+        const AUDIO_URL = 'https://github.com/sistema-secretarios/dra-corrales/raw/refs/heads/main/dra%20corrales.mp3';
 
-            if (!imgWrapper || !audioBadge) return;
+        function toggleSaludoYAbrirModal() {
+            // Abrir modal de login
+            abrirModalLogin();
 
-            function toggleSaludo() {
-                // Si el audio está sonando, pausar inmediatamente
-                if (currentAudio && !currentAudio.paused) {
-                    currentAudio.pause();
-                    return;
-                }
-
-                // Crear nueva instancia si no existe o ya terminó
-                if (!currentAudio) {
-                    currentAudio = new Audio(AUDIO_URL);
-                    currentAudio.preload = 'auto';
-                    
-                    // Evento de espera (buffering)
-                    currentAudio.addEventListener('waiting', () => {
-                        imgWrapper.classList.add('cargando');
-                        audioBadge.textContent = '⏳';
-                    });
-                    
-                    // Reproducción activa
-                    currentAudio.addEventListener('playing', () => {
-                        imgWrapper.classList.remove('cargando');
-                        imgWrapper.classList.add('reproduciendo');
-                        audioBadge.textContent = '⏸️';
-                    });
-                    
-                    // Pausa manual o por sistema
-                    currentAudio.addEventListener('pause', () => {
-                        imgWrapper.classList.remove('reproduciendo', 'cargando');
-                        audioBadge.textContent = '🔊';
-                    });
-                    
-                    // Finalización natural
-                    currentAudio.addEventListener('ended', () => {
-                        imgWrapper.classList.remove('reproduciendo', 'cargando');
-                        audioBadge.textContent = '🔊';
-                        currentAudio.currentTime = 0;
-                    });
-                    
-                    // Error de red o carga
-                    currentAudio.addEventListener('error', (e) => {
-                        imgWrapper.classList.remove('reproduciendo', 'cargando');
-                        audioBadge.textContent = '⚠️';
-                        console.error('Error al cargar el audio:', e);
-                    });
-                } else if (currentAudio.paused && currentAudio.currentTime > 0 && currentAudio.readyState >= 2) {
-                    // Reanudar desde donde quedó (si no terminó)
-                    imgWrapper.classList.add('cargando');
-                    audioBadge.textContent = '⏳';
-                    currentAudio.play().catch(err => {
-                        imgWrapper.classList.remove('cargando');
-                        audioBadge.textContent = '🔊';
-                        console.warn('Error al reanudar:', err);
-                    });
-                    return;
-                }
+            // Control de audio (sin badge visual, solo anillos)
+            if (currentAudio && !currentAudio.paused) {
+                currentAudio.pause();
+                return;
+            }
+            if (!currentAudio) {
+                currentAudio = new Audio(AUDIO_URL);
+                currentAudio.preload = 'auto';
                 
-                // En cualquier otro caso (primera reproducción o después de ended) iniciar desde cero
-                imgWrapper.classList.add('cargando');
-                audioBadge.textContent = '⏳';
-                currentAudio.play().catch(error => {
+                currentAudio.addEventListener('waiting', () => {
+                    imgWrapper.classList.add('cargando');
+                });
+                currentAudio.addEventListener('playing', () => {
                     imgWrapper.classList.remove('cargando');
-                    audioBadge.textContent = '🔊';
-                    console.warn('Reproducción bloqueada o error:', error);
+                    imgWrapper.classList.add('reproduciendo');
+                });
+                currentAudio.addEventListener('pause', () => {
+                    imgWrapper.classList.remove('reproduciendo', 'cargando');
+                });
+                currentAudio.addEventListener('ended', () => {
+                    imgWrapper.classList.remove('reproduciendo', 'cargando');
+                    currentAudio.currentTime = 0;
+                });
+                currentAudio.addEventListener('error', () => {
+                    imgWrapper.classList.remove('reproduciendo', 'cargando');
                 });
             }
+            imgWrapper.classList.add('cargando');
+            currentAudio.play().catch(err => {
+                imgWrapper.classList.remove('cargando');
+                console.warn('Audio bloqueado o error:', err);
+            });
+        }
 
-            // Asignar eventos al wrapper
-            imgWrapper.addEventListener('click', (e) => {
+        // Eventos click y teclado en la imagen
+        imgWrapper.addEventListener('click', (e) => {
+            e.stopPropagation();
+            toggleSaludoYAbrirModal();
+        });
+        imgWrapper.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
                 e.stopPropagation();
-                toggleSaludo();
-            });
+                toggleSaludoYAbrirModal();
+            }
+        });
 
-            imgWrapper.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    toggleSaludo();
-                }
-            });
-        })();
-    </script>
-
-    <!-- Script para desvanecer créditos a los 5 segundos -->
-    <script>
-        window.addEventListener('DOMContentLoaded', () => {
+        // Créditos desaparecen a los 5 segundos
+        setTimeout(() => {
             const flotante = document.getElementById('creditos-flotante');
-            setTimeout(() => {
+            if (flotante) {
                 flotante.classList.add('fade-out');
                 setTimeout(() => flotante.remove(), 1000);
-            }, 5000);
-        });
+            }
+        }, 5000);
     </script>
-
 </body>
 </html>
