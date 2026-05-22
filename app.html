@@ -996,17 +996,10 @@
             });
         });
 
-        // ==================== AUDIO DE SALIDA ====================
-        const audioSalida = new Audio('https://github.com/sistema-secretarios/dra-riveros/raw/refs/heads/main/salida.mp3');
-        audioSalida.preload = 'auto';
-
-        function reproducirSonidoSalida() {
-            audioSalida.play().catch(err => console.warn('Error al reproducir sonido de salida:', err));
-        }
-
-        // Al hacer clic en el botón Salir, primero reproduce el audio y luego muestra el modal
+        // ==================== SIN AUDIO ====================
+        // Se ha eliminado toda la lógica de audio (reproducción de sonido de salida)
+        // El botón de salir ahora solo muestra el modal sin reproducir audio.
         document.getElementById('btnSalir').addEventListener('click', () => {
-            reproducirSonidoSalida();
             document.getElementById('modalSalida').classList.add('active');
         });
 

@@ -124,7 +124,7 @@
             color: oklch(0.20 0.02 300);
         }
 
-        /* CONTENEDOR IMAGEN CON ANILLOS GIRATORIOS (SIN BADGE) */
+        /* CONTENEDOR IMAGEN CON ANILLOS GIRATORIOS (SIN AUDIO) */
         .img-container {
             flex: 1;
             display: flex;
@@ -191,25 +191,6 @@
             z-index: -2;
             animation: rotateRingReverse 6s linear infinite;
             filter: blur(10px);
-        }
-
-        /* Estados dinámicos del audio sobre los anillos */
-        .img-wrapper.cargando::before {
-            animation: rotateRing 1s linear infinite;
-            filter: saturate(1.5);
-        }
-
-        .img-wrapper.reproduciendo::before {
-            animation: rotateRing 2s linear infinite;
-            box-shadow: 0 0 35px rgba(192, 132, 252, 0.9);
-            background: conic-gradient(
-                from 0deg,
-                #e9d5ff,
-                #c084fc,
-                #a855f7,
-                #d946ef,
-                #e9d5ff
-            );
         }
 
         @keyframes rotateRing {
@@ -485,25 +466,23 @@
     <div class="contenedor-principal">
         <div class="panel-unico">
             <div class="brand-container">
-                <!-- Título en una sola línea: Dra. Corrales -->
                 <h1 class="titulo-principal">Dra. Corrales</h1>
                 <p class="subtitulo-azul">Defensoría Civil y Comercial 6</p>
                 <div class="info-institucional">
                     <p>MINISTERIO PÚBLICO DE MISIONES</p>
                     <p>Acceso Exclusivo de Secretaria</p>
-                    <!-- Texto sin emoji -->
                     <p style="font-size: 0.85rem; margin-top: 10px;">Haz clic en la imagen para acceder</p>
                 </div>
             </div>
 
             <div class="img-container">
-                <!-- Wrapper con anillos giratorios (sin badge de audio) -->
+                <!-- Wrapper con anillos giratorios (sin audio) solo abre login -->
                 <div class="img-wrapper" 
-                     id="imagenClickAudio" 
+                     id="imagenAbrirLogin" 
                      role="button" 
                      tabindex="0" 
-                     aria-label="Abrir acceso al sistema y escuchar saludo institucional" 
-                     title="Haz clic: abre inicio de sesión + audio">
+                     aria-label="Abrir inicio de sesión" 
+                     title="Haz clic para acceder al sistema">
                     <img src="https://github.com/sistemadigital/iconos/blob/main/pc-violeta.png?raw=true" 
                          alt="Sistema Digital - Defensoría" 
                          class="img-3d">
@@ -569,7 +548,7 @@
     <!-- Toast para mensajes -->
     <div id="globalAuthMessage" class="auth-message-global"></div>
 
-    <!-- FIREBASE (configuración ORIGINAL de Corrales) y lógica de autenticación + audio (sin badge) -->
+    <!-- FIREBASE (configuración ORIGINAL de Corrales) y lógica de autenticación sin audio -->
     <script type="module">
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, updateProfile } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
@@ -764,61 +743,22 @@
             }
         });
 
-        // === AUDIO SIN BADGE (MP3 mantiene animación de anillos) ===
-        let currentAudio = null;
-        const imgWrapper = document.getElementById('imagenClickAudio');
-        const AUDIO_URL = 'https://github.com/sistema-secretarios/dra-corrales/raw/refs/heads/main/dra%20corrales.mp3';
-
-        function toggleSaludoYAbrirModal() {
-            // Abrir modal de login
-            abrirModalLogin();
-
-            // Control de audio (sin badge visual, solo anillos)
-            if (currentAudio && !currentAudio.paused) {
-                currentAudio.pause();
-                return;
-            }
-            if (!currentAudio) {
-                currentAudio = new Audio(AUDIO_URL);
-                currentAudio.preload = 'auto';
-                
-                currentAudio.addEventListener('waiting', () => {
-                    imgWrapper.classList.add('cargando');
-                });
-                currentAudio.addEventListener('playing', () => {
-                    imgWrapper.classList.remove('cargando');
-                    imgWrapper.classList.add('reproduciendo');
-                });
-                currentAudio.addEventListener('pause', () => {
-                    imgWrapper.classList.remove('reproduciendo', 'cargando');
-                });
-                currentAudio.addEventListener('ended', () => {
-                    imgWrapper.classList.remove('reproduciendo', 'cargando');
-                    currentAudio.currentTime = 0;
-                });
-                currentAudio.addEventListener('error', () => {
-                    imgWrapper.classList.remove('reproduciendo', 'cargando');
-                });
-            }
-            imgWrapper.classList.add('cargando');
-            currentAudio.play().catch(err => {
-                imgWrapper.classList.remove('cargando');
-                console.warn('Audio bloqueado o error:', err);
+        // === CLICK EN LA IMAGEN: SOLO ABRE MODAL LOGIN (SIN AUDIO) ===
+        const imagenWrapper = document.getElementById('imagenAbrirLogin');
+        if (imagenWrapper) {
+            imagenWrapper.addEventListener('click', (e) => {
+                e.stopPropagation();
+                abrirModalLogin();
+            });
+            // Accesibilidad: tecla Enter o Espacio
+            imagenWrapper.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    abrirModalLogin();
+                }
             });
         }
-
-        // Eventos click y teclado en la imagen
-        imgWrapper.addEventListener('click', (e) => {
-            e.stopPropagation();
-            toggleSaludoYAbrirModal();
-        });
-        imgWrapper.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter' || e.key === ' ') {
-                e.preventDefault();
-                e.stopPropagation();
-                toggleSaludoYAbrirModal();
-            }
-        });
 
         // Créditos desaparecen a los 5 segundos
         setTimeout(() => {
