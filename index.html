@@ -22,7 +22,7 @@
             font-family: 'Inter', sans-serif;
             background-color: #ffffff;
             overflow-x: hidden;
-            color: #2d0a3d; /* púrpura oscuro */
+            color: #2d0a3d;
         }
 
         /* --- FLOTANTE DE CRÉDITOS Y VERSIÓN --- */
@@ -64,7 +64,7 @@
             transform: translateY(-20px) !important;
         }
 
-        /* --- CONTENEDOR PRINCIPAL (panel único centrado) --- */
+        /* --- CONTENEDOR PRINCIPAL --- */
         .contenedor-principal {
             display: flex;
             align-items: center;
@@ -97,13 +97,32 @@
             max-width: 45%;
         }
 
+        /* === TÍTULO PRINCIPAL CON EFECTO MAGNÉTICO RÁPIDO Y COLOR RESALTADO === */
         .titulo-principal {
             font-size: clamp(3rem, 8vw, 5.5rem);
             font-weight: 900;
             line-height: 1.1;
             letter-spacing: -0.05em;
             margin-bottom: 20px;
-            color: oklch(0.35 0.18 300);
+            /* Gradiente de tonos púrpura puros (sin blanco) para efecto magnético */
+            background: linear-gradient(90deg, 
+                #4c1d95 0%,      /* morado intenso */
+                #7e22ce 25%,     /* violeta medio */
+                #c084fc 50%,     /* violeta claro */
+                #a855f7 75%,     /* violeta neón */
+                #4c1d95 100%);
+            background-size: 300% 100%;
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            /* Sombra luminosa que resalta el color púrpura */
+            text-shadow: 0 0 10px rgba(168, 85, 247, 0.5);
+            animation: brilloMagnetico 1.2s ease-in-out infinite alternate;
+        }
+
+        @keyframes brilloMagnetico {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 100% 50%; }
         }
 
         .subtitulo-azul {
@@ -124,7 +143,7 @@
             color: oklch(0.20 0.02 300);
         }
 
-        /* CONTENEDOR IMAGEN CON ANILLOS GIRATORIOS (SIN AUDIO) */
+        /* IMAGEN CON ANILLOS GIRATORIOS */
         .img-container {
             flex: 1;
             display: flex;
@@ -147,7 +166,6 @@
             border-radius: 50%;
         }
 
-        /* Anillo giratorio principal */
         .img-wrapper::before {
             content: '';
             position: absolute;
@@ -171,7 +189,6 @@
             transition: all 0.4s ease;
         }
 
-        /* Segundo anillo externo con blur */
         .img-wrapper::after {
             content: '';
             position: absolute;
@@ -245,7 +262,7 @@
         .panel-unico::before { top: 30px; }
         .panel-unico::after { bottom: 30px; }
 
-        /* --- MODALES ESTILO PÚRPURA --- */
+        /* MODALES ESTILO PÚRPURA */
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -382,7 +399,7 @@
             text-decoration: underline;
         }
 
-        /* Toast de mensajes global */
+        /* Toast de mensajes */
         .auth-message-global {
             position: fixed;
             bottom: 30px;
@@ -476,7 +493,6 @@
             </div>
 
             <div class="img-container">
-                <!-- Wrapper con anillos giratorios (sin audio) solo abre login -->
                 <div class="img-wrapper" 
                      id="imagenAbrirLogin" 
                      role="button" 
@@ -548,7 +564,7 @@
     <!-- Toast para mensajes -->
     <div id="globalAuthMessage" class="auth-message-global"></div>
 
-    <!-- FIREBASE (configuración ORIGINAL de Corrales) y lógica de autenticación sin audio -->
+    <!-- FIREBASE (configuración ORIGINAL) y lógica de autenticación -->
     <script type="module">
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, updateProfile } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
@@ -590,7 +606,6 @@
             }, 4000);
         }
 
-        // === LOGIN desde modal ===
         window.loginUser = async function() {
             const rawEmail = document.getElementById('loginEmail').value;
             const password = document.getElementById('loginPassword').value;
@@ -613,7 +628,6 @@
             }
         };
 
-        // === REGISTRO desde modal ===
         window.registerUser = async function() {
             const name = document.getElementById('registerName').value.trim();
             const rawEmail = document.getElementById('registerEmail').value;
@@ -646,14 +660,12 @@
             }
         };
 
-        // Redirección si ya está autenticado
         onAuthStateChanged(auth, user => {
             if (user && !isRegistering && !isLoggingIn && (window.location.pathname.includes('index.html') || window.location.pathname === '/' || window.location.pathname === '')) {
                 window.location.href = 'app.html';
             }
         });
 
-        // === MANEJO DE MODALES ===
         const modalLogin = document.getElementById('modalLogin');
         const modalRegistro = document.getElementById('modalRegistro');
 
@@ -672,23 +684,17 @@
             modalRegistro.classList.remove('active');
         }
 
-        // Cerrar con X
         document.getElementById('cerrarModalLoginBtn').addEventListener('click', cerrarModalLogin);
         document.getElementById('cerrarModalRegistroBtn').addEventListener('click', cerrarModalRegistro);
-
-        // Cerrar al hacer clic fuera
         modalLogin.addEventListener('click', (e) => {
             if (e.target === modalLogin) cerrarModalLogin();
         });
         modalRegistro.addEventListener('click', (e) => {
             if (e.target === modalRegistro) cerrarModalRegistro();
         });
-
-        // Botones acción
         document.getElementById('btnLoginAction').addEventListener('click', () => loginUser());
         document.getElementById('btnRegisterAction').addEventListener('click', () => registerUser());
 
-        // Mostrar/ocultar contraseña
         const mostrarLoginCheck = document.getElementById('mostrarLoginPass');
         const loginPassInput = document.getElementById('loginPassword');
         mostrarLoginCheck.addEventListener('change', () => {
@@ -700,7 +706,6 @@
             regPassInput.type = mostrarRegCheck.checked ? 'text' : 'password';
         });
 
-        // Navegación entre modales
         document.getElementById('cambiarARegistroDesdeLogin').addEventListener('click', () => {
             cerrarModalLogin();
             abrirModalRegistro();
@@ -710,7 +715,6 @@
             abrirModalLogin();
         });
 
-        // Enter para login y registro
         const loginEmailInput = document.getElementById('loginEmail');
         const loginPasswordInput = document.getElementById('loginPassword');
         const handleLoginEnter = (e) => {
@@ -735,7 +739,6 @@
         regEmailInput.addEventListener('keypress', handleRegisterEnter);
         regPasswordInput.addEventListener('keypress', handleRegisterEnter);
 
-        // Escape cierra modales
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
                 if (modalLogin.classList.contains('active')) cerrarModalLogin();
@@ -743,14 +746,12 @@
             }
         });
 
-        // === CLICK EN LA IMAGEN: SOLO ABRE MODAL LOGIN (SIN AUDIO) ===
         const imagenWrapper = document.getElementById('imagenAbrirLogin');
         if (imagenWrapper) {
             imagenWrapper.addEventListener('click', (e) => {
                 e.stopPropagation();
                 abrirModalLogin();
             });
-            // Accesibilidad: tecla Enter o Espacio
             imagenWrapper.addEventListener('keydown', (e) => {
                 if (e.key === 'Enter' || e.key === ' ') {
                     e.preventDefault();
@@ -760,7 +761,6 @@
             });
         }
 
-        // Créditos desaparecen a los 5 segundos
         setTimeout(() => {
             const flotante = document.getElementById('creditos-flotante');
             if (flotante) {
