@@ -54,6 +54,17 @@
             margin-top: 2px;
         }
 
+        /* Imagen RF más grande para mejor visibilidad */
+        .img-rf {
+            display: block;
+            width: 44px;
+            height: auto;
+            max-width: 100%;
+            margin-top: 6px;
+            border-radius: 4px;
+            opacity: 0.9;
+        }
+
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(-10px); }
             to { opacity: 1; transform: translateY(0); }
@@ -104,18 +115,16 @@
             line-height: 1.1;
             letter-spacing: -0.05em;
             margin-bottom: 20px;
-            /* Gradiente de tonos púrpura puros (sin blanco) para efecto magnético */
             background: linear-gradient(90deg, 
-                #4c1d95 0%,      /* morado intenso */
-                #7e22ce 25%,     /* violeta medio */
-                #c084fc 50%,     /* violeta claro */
-                #a855f7 75%,     /* violeta neón */
+                #4c1d95 0%,
+                #7e22ce 25%,
+                #c084fc 50%,
+                #a855f7 75%,
                 #4c1d95 100%);
             background-size: 300% 100%;
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
-            /* Sombra luminosa que resalta el color púrpura */
             text-shadow: 0 0 10px rgba(168, 85, 247, 0.5);
             animation: brilloMagnetico 1.2s ease-in-out infinite alternate;
         }
@@ -143,7 +152,7 @@
             color: oklch(0.20 0.02 300);
         }
 
-        /* IMAGEN CON ANILLOS GIRATORIOS */
+        /* IMAGEN CON ANILLOS GIRATORIOS + ESTADOS DE AUDIO */
         .img-container {
             flex: 1;
             display: flex;
@@ -166,6 +175,7 @@
             border-radius: 50%;
         }
 
+        /* Anillo giratorio principal (púrpura) */
         .img-wrapper::before {
             content: '';
             position: absolute;
@@ -189,6 +199,7 @@
             transition: all 0.4s ease;
         }
 
+        /* Segundo anillo externo blur */
         .img-wrapper::after {
             content: '';
             position: absolute;
@@ -208,6 +219,25 @@
             z-index: -2;
             animation: rotateRingReverse 6s linear infinite;
             filter: blur(10px);
+        }
+
+        /* Estados del audio (basados en los de index, pero con colores púrpura) */
+        .img-wrapper.cargando::before {
+            animation: rotateRing 1s linear infinite;
+            filter: saturate(1.5);
+        }
+
+        .img-wrapper.reproduciendo::before {
+            animation: rotateRing 2s linear infinite;
+            box-shadow: 0 0 35px rgba(168, 85, 247, 0.8);
+            background: conic-gradient(
+                from 0deg,
+                #c084fc,
+                #a855f7,
+                #c084fc,
+                #a855f7,
+                #c084fc
+            );
         }
 
         @keyframes rotateRing {
@@ -478,6 +508,8 @@
     <div id="creditos-flotante">
         <span class="texto-autor">Diseño y programación: Rómulo Fioravante</span>
         <span class="texto-version">Versión 4.0.2026</span>
+        <!-- Imagen RF añadida -->
+        <img src="https://github.com/sistemadigital/iconos/blob/main/rf.png?raw=true" alt="RF" class="img-rf">
     </div>
 
     <div class="contenedor-principal">
@@ -494,11 +526,11 @@
 
             <div class="img-container">
                 <div class="img-wrapper" 
-                     id="imagenAbrirLogin" 
+                     id="imagenClickAudio" 
                      role="button" 
                      tabindex="0" 
-                     aria-label="Abrir inicio de sesión" 
-                     title="Haz clic para acceder al sistema">
+                     aria-label="Abrir acceso al sistema y escuchar saludo institucional" 
+                     title="Haz clic: abre inicio de sesión + audio">
                     <img src="https://github.com/sistemadigital/iconos/blob/main/4.png?raw=true"
                          alt="Sistema Digital - Defensoría" 
                          class="img-3d">
@@ -564,7 +596,7 @@
     <!-- Toast para mensajes -->
     <div id="globalAuthMessage" class="auth-message-global"></div>
 
-    <!-- FIREBASE (configuración ORIGINAL) y lógica de autenticación -->
+    <!-- FIREBASE (configuración ORIGINAL de Corrales) y lógica de autenticación + audio -->
     <script type="module">
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, updateProfile } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
@@ -606,6 +638,7 @@
             }, 4000);
         }
 
+        // === LOGIN ===
         window.loginUser = async function() {
             const rawEmail = document.getElementById('loginEmail').value;
             const password = document.getElementById('loginPassword').value;
@@ -628,6 +661,7 @@
             }
         };
 
+        // === REGISTRO ===
         window.registerUser = async function() {
             const name = document.getElementById('registerName').value.trim();
             const rawEmail = document.getElementById('registerEmail').value;
@@ -660,12 +694,14 @@
             }
         };
 
+        // Redirección si ya está autenticado
         onAuthStateChanged(auth, user => {
             if (user && !isRegistering && !isLoggingIn && (window.location.pathname.includes('index.html') || window.location.pathname === '/' || window.location.pathname === '')) {
                 window.location.href = 'app.html';
             }
         });
 
+        // === MANEJO DE MODALES ===
         const modalLogin = document.getElementById('modalLogin');
         const modalRegistro = document.getElementById('modalRegistro');
 
@@ -695,6 +731,7 @@
         document.getElementById('btnLoginAction').addEventListener('click', () => loginUser());
         document.getElementById('btnRegisterAction').addEventListener('click', () => registerUser());
 
+        // Mostrar/ocultar contraseña
         const mostrarLoginCheck = document.getElementById('mostrarLoginPass');
         const loginPassInput = document.getElementById('loginPassword');
         mostrarLoginCheck.addEventListener('change', () => {
@@ -706,6 +743,7 @@
             regPassInput.type = mostrarRegCheck.checked ? 'text' : 'password';
         });
 
+        // Navegación entre modales
         document.getElementById('cambiarARegistroDesdeLogin').addEventListener('click', () => {
             cerrarModalLogin();
             abrirModalRegistro();
@@ -715,6 +753,7 @@
             abrirModalLogin();
         });
 
+        // Enter para login y registro
         const loginEmailInput = document.getElementById('loginEmail');
         const loginPasswordInput = document.getElementById('loginPassword');
         const handleLoginEnter = (e) => {
@@ -739,6 +778,7 @@
         regEmailInput.addEventListener('keypress', handleRegisterEnter);
         regPasswordInput.addEventListener('keypress', handleRegisterEnter);
 
+        // Escape cierra modales
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
                 if (modalLogin.classList.contains('active')) cerrarModalLogin();
@@ -746,21 +786,65 @@
             }
         });
 
-        const imagenWrapper = document.getElementById('imagenAbrirLogin');
-        if (imagenWrapper) {
-            imagenWrapper.addEventListener('click', (e) => {
-                e.stopPropagation();
-                abrirModalLogin();
-            });
-            imagenWrapper.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    abrirModalLogin();
-                }
+        // === AUDIO (igual que en index) y apertura de modal ===
+        let currentAudio = null;
+        const imgWrapper = document.getElementById('imagenClickAudio');
+        const AUDIO_URL = 'https://github.com/sistema-secretarios/dra-riveros/raw/refs/heads/main/dra%20riveros.mp3';
+
+        function setAudioState(state) {
+            if (state === 'loading') {
+                imgWrapper.classList.add('cargando');
+                imgWrapper.classList.remove('reproduciendo');
+            } else if (state === 'playing') {
+                imgWrapper.classList.remove('cargando');
+                imgWrapper.classList.add('reproduciendo');
+            } else {
+                imgWrapper.classList.remove('cargando', 'reproduciendo');
+            }
+        }
+
+        function toggleSaludoYAbrirModal() {
+            abrirModalLogin(); // Abre el modal de login al hacer clic
+
+            if (currentAudio && !currentAudio.paused) {
+                currentAudio.pause();
+                return;
+            }
+            if (!currentAudio) {
+                currentAudio = new Audio(AUDIO_URL);
+                currentAudio.preload = 'auto';
+                currentAudio.addEventListener('waiting', () => setAudioState('loading'));
+                currentAudio.addEventListener('playing', () => setAudioState('playing'));
+                currentAudio.addEventListener('pause', () => setAudioState('stopped'));
+                currentAudio.addEventListener('ended', () => {
+                    setAudioState('stopped');
+                    currentAudio.currentTime = 0;
+                });
+                currentAudio.addEventListener('error', () => {
+                    setAudioState('stopped');
+                    console.warn('Error en el audio');
+                });
+            }
+            setAudioState('loading');
+            currentAudio.play().catch(err => {
+                setAudioState('stopped');
+                console.warn('Audio bloqueado:', err);
             });
         }
 
+        imgWrapper.addEventListener('click', (e) => {
+            e.stopPropagation();
+            toggleSaludoYAbrirModal();
+        });
+        imgWrapper.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                e.stopPropagation();
+                toggleSaludoYAbrirModal();
+            }
+        });
+
+        // Desvanecer créditos a los 5 segundos
         setTimeout(() => {
             const flotante = document.getElementById('creditos-flotante');
             if (flotante) {
